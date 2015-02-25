@@ -1,8 +1,7 @@
 font equ 15360
 attr equ 22528
 block equ 127
-clearblock equ 7+64
-scrollblock equ 56+64
+scrollblock equ 64+16 ; 56+64
 emptyblock equ 7+64
 badgerbytes equ 63*15
 wavebytes equ 237*3
@@ -20,12 +19,12 @@ wavebytes equ 237*3
      call 8859           ; set permanent border colours.
      call 3503           ; ROM routine - clears screen, opens chan 2.
 
-     ; jp start
+
 
      call precalcbadger
      di
-     ; ld ix, abc+1
- starmain:
+
+starmain:
 
      ld hl, (starframe)
      xor a
@@ -936,8 +935,8 @@ startframe:
      or c
 
      jp nz, scrollcopy
-     ld a,7
-     out (254),a
+     ; ld a,7
+     ; out (254),a
 
      ld bc, wavebytes
      dec hl
@@ -951,11 +950,6 @@ startframe:
      ld (hl),e
      inc hl
      ld (hl),d
-
-          ; ld sp, distort      ; 2 bytes screen address then 2 bytes frame offset
-
-
-     ; jp starmain
 
 
 scrollcopy:
@@ -1001,16 +995,9 @@ cont:ld (newletter+1),hl
      add hl, hl
      ld  bc, font
      add hl, bc
-     ; ld hl, font        ; charset
-     ; sla a
-     ; sla a
-     ; sla a               ; * 8 to get character offset
-     ; add a,l
-     ; jr nc, nocarry
-     ; inc h
-     ; nocarry:
+
      ld de, character
-     ; ld l,a              ; bitmap of first row of char in (hl)
+
      rept 8              ; copy character bitmap to character
      ldi
      endm
@@ -1049,43 +1036,6 @@ continuecharacter:
 
      ;ld a,1
      out (254),a
-
-
-
-
-     ;ld (scrollerstart),hl
-     ;ld a, (character)
-     ;rla
-     ;ld (character),a
-     ;and 64
-     ;ld (hl),a
-
-
-
-
-
-     ;ld (character),a
-     ;jr c, zero
-     ;ld (hl),255
-     ;jp next
-;zero:
-     ;ld (hl),0
-;next:
-
-
-
-
-
-     ; http://webpages.charter.net/dawill/tmoranwms/Elec_Z80.html
-
-
-
-
-
-
-
-
-
 
 
      jp starmain
