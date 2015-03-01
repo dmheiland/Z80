@@ -10,7 +10,6 @@ wavebytes equ 237*3
 
      org 30000
 
-
      ld (stack),sp
 
      ld a,71             ; white ink (7) on black paper (0),
@@ -20,8 +19,9 @@ wavebytes equ 237*3
      call 8859           ; set permanent border colours.
      call 3503           ; ROM routine - clears screen, opens chan 2.
 
-     call precalcbadger
 
+
+     call precalcbadger
      di
 
 starmain:
@@ -68,12 +68,11 @@ nxt: ld (starframe),hl
 
 
 startframe:
-
      ld (stack),sp
      ld sp, (stacky)
      xor a
 ;1
-     ld bc, 13
+     ld bc, 15
      pop de
      ld (de),a
      inc de
@@ -104,7 +103,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;4
@@ -118,7 +117,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;5
@@ -132,7 +131,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;6
@@ -146,7 +145,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;7
@@ -160,7 +159,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;8
@@ -174,7 +173,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;9
@@ -188,7 +187,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;10
@@ -201,7 +200,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;11
@@ -214,7 +213,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;12
@@ -227,7 +226,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;13
@@ -240,7 +239,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;14
@@ -253,7 +252,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;15
@@ -266,7 +265,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;16
@@ -279,7 +278,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;17
@@ -292,7 +291,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,12
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;18
@@ -305,7 +304,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld c,13
+     ld c,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;19
@@ -318,7 +317,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,13
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;20
@@ -331,7 +330,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,13
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;21
@@ -344,7 +343,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,13
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;22
@@ -357,7 +356,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,13
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;23
@@ -370,7 +369,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,13
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;24
@@ -383,7 +382,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,13
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;25
@@ -396,7 +395,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;26
@@ -409,7 +408,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;27
@@ -422,7 +421,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;28
@@ -435,7 +434,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;29
@@ -448,7 +447,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;30
@@ -461,7 +460,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;31
@@ -474,7 +473,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;32
@@ -487,7 +486,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;33
@@ -500,7 +499,7 @@ startframe:
      ex de,hl
      pop hl              ; frame
      add hl, bc
-     ld bc,14
+     ld bc,15
      ldir                ; copy (hl) -> (de), bc times  ' 16
      ld (de),a
 ;34
@@ -919,7 +918,7 @@ startframe:
 
 
 
- scrollermain:
+
 
 
      ld hl, badgeranim
@@ -1032,12 +1031,11 @@ continuecharacter:
      out (254),a
      ei
 
-
      halt
      di
 
      ;ld a,1
-     ;out (254),a
+     out (254),a
 
 
      jp starmain
@@ -1118,7 +1116,7 @@ badgeroffsets:
 starframe:
 defw    stars
 message:
-defb    "    Big scrolly message.  Written with ~3 weeks knowledge of Z80.  Not bad I think...  25% processor time remaining per vertical sync, wonder what I'll do with that!     "
+defb    "    Big scrolly message....           "
 defb    0
 stack:
 defb    0,0
@@ -1241,8 +1239,6 @@ defb $08,$50,$00,$0F,		$08,$50,$40,$1A,		$09,$50,$40,$0B,		$09,$50,$80,$16,		$0A
 defb $08,$50,$00,$0F,	$08,$50,$C0,$12,	$08,$50,$40,$1A,	$09,$50,$C0,$03,	$09,$50,$40,$0B,	$09,$50,$00,$0F,	$09,$50,$80,$16,	$0A,$50,$00,$00,	$0A,$50,$80,$07,	$0A,$50,$00,$0F,	$0A,$50,$C0,$12,	$0A,$50,$40,$1A,	$0B,$50,$C0,$03,	$0B,$50,$80,$07,	$0B,$50,$00,$0F,	$0B,$50,$80,$16,	$0C,$50,$00,$00,	$0C,$50,$C0,$03,	$0C,$50,$40,$0B,	$0C,$50,$00,$0F,	$0C,$50,$80,$16,	$0C,$50,$40,$1A,	$0D,$50,$C0,$03,	$0D,$50,$80,$07,	$0D,$50,$00,$0F,	$0D,$50,$C0,$12,	$0D,$50,$40,$1A,	$0E,$50,$00,$00,	$0E,$50,$C0,$03,	$0E,$50,$40,$0B,	$0E,$50,$00,$0F,	$0E,$50,$C0,$12,	$0E,$50,$40,$1A,	$0F,$50,$00,$00,	$0F,$50,$C0,$03,	$0F,$50,$80,$07,	$0F,$50,$40,$0B,	$0F,$50,$00,$0F,	$0F,$50,$C0,$12,	$0F,$50,$80,$16,	$0F,$50,$40,$1A,	$10,$50,$00,$00,	$10,$50,$C0,$03,	$10,$50,$C0,$03,	$10,$50,$80,$07,	$10,$50,$40,$0B,	$10,$50,$40,$0B,	$10,$50,$00,$0F,	$10,$50,$C0,$12,	$10,$50,$C0,$12,	$10,$50,$C0,$12,	$10,$50,$80,$16,	$10,$50,$80,$16,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$80,$16,	$10,$50,$80,$16,	$10,$50,$80,$16,	$10,$50,$C0,$12,	$10,$50,$C0,$12,	$10,$50,$00,$0F,	$10,$50,$00,$0F,	$10,$50,$40,$0B,	$10,$50,$80,$07,	$10,$50,$80,$07,	$10,$50,$C0,$03,	$10,$50,$00,$00,	$0F,$50,$40,$1A,	$0F,$50,$80,$16,	$0F,$50,$C0,$12,	$0F,$50,$00,$0F,	$0F,$50,$40,$0B,	$0F,$50,$80,$07,	$0F,$50,$C0,$03,	$0F,$50,$00,$00,	$0E,$50,$40,$1A,	$0E,$50,$80,$16,	$0E,$50,$C0,$12,	$0E,$50,$40,$0B,	$0E,$50,$80,$07,	$0E,$50,$C0,$03,	$0D,$50,$40,$1A,	$0D,$50,$80,$16,	$0D,$50,$C0,$12,	$0D,$50,$40,$0B,	$0D,$50,$80,$07,	$0D,$50,$00,$00,	$0C,$50,$40,$1A,	$0C,$50,$C0,$12,	$0C,$50,$40,$0B,	$0C,$50,$80,$07,	$0C,$50,$00,$00,	$0B,$50,$40,$1A,	$0B,$50,$C0,$12,	$0B,$50,$40,$0B,	$0B,$50,$80,$07,	$0B,$50,$00,$00,	$0A,$50,$80,$16,	$0A,$50,$00,$0F,	$0A,$50,$40,$0B,	$0A,$50,$C0,$03,	$09,$50,$40,$1A,	$09,$50,$C0,$12,	$09,$50,$40,$0B,	$09,$50,$80,$07,	$09,$50,$00,$00,	$08,$50,$80,$16,	$08,$50,$00,$0F,	$08,$50,$80,$07,	$08,$50,$C0,$03,	$07,$50,$40,$1A,	$07,$50,$C0,$12,	$07,$50,$40,$0B,	$07,$50,$C0,$03,	$07,$50,$00,$00,	$06,$50,$80,$16,	$06,$50,$00,$0F,	$06,$50,$80,$07,	$06,$50,$C0,$03,	$05,$50,$40,$1A,	$05,$50,$C0,$12,	$05,$50,$00,$0F,	$05,$50,$80,$07,	$05,$50,$00,$00,	$04,$50,$40,$1A,	$04,$50,$C0,$12,	$04,$50,$40,$0B,	$04,$50,$80,$07,	$04,$50,$00,$00,	$03,$50,$40,$1A,	$03,$50,$C0,$12,	$03,$50,$00,$0F,	$03,$50,$80,$07,	$03,$50,$C0,$03,	$02,$50,$40,$1A,	$02,$50,$80,$16,	$02,$50,$C0,$12,	$02,$50,$40,$0B,	$02,$50,$80,$07,	$02,$50,$C0,$03,	$02,$50,$00,$00,	$01,$50,$40,$1A,	$01,$50,$80,$16,	$01,$50,$00,$0F,	$01,$50,$40,$0B,	$01,$50,$80,$07,	$01,$50,$C0,$03,	$01,$50,$C0,$03,	$01,$50,$00,$00,	$00,$50,$40,$1A,	$00,$50,$80,$16,	$00,$50,$C0,$12,	$00,$50,$C0,$12,	$00,$50,$00,$0F,	$00,$50,$40,$0B,	$00,$50,$40,$0B,	$00,$50,$80,$07,	$00,$50,$80,$07,	$00,$50,$C0,$03,	$00,$50,$C0,$03,	$00,$50,$C0,$03,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$00,$00,	$00,$50,$C0,$03,	$00,$50,$C0,$03,	$00,$50,$80,$07,	$00,$50,$80,$07,	$00,$50,$40,$0B,	$00,$50,$40,$0B,	$00,$50,$00,$0F,	$00,$50,$00,$0F,	$00,$50,$C0,$12,	$00,$50,$80,$16,	$00,$50,$40,$1A,	$00,$50,$40,$1A,	$01,$50,$00,$00,	$01,$50,$C0,$03,	$01,$50,$80,$07,	$01,$50,$40,$0B,	$01,$50,$00,$0F,	$01,$50,$C0,$12,	$01,$50,$80,$16,	$01,$50,$40,$1A,	$02,$50,$C0,$03,	$02,$50,$80,$07,	$02,$50,$40,$0B,	$02,$50,$00,$0F,	$02,$50,$80,$16,	$02,$50,$40,$1A,	$03,$50,$00,$00,	$03,$50,$80,$07,	$03,$50,$40,$0B,	$03,$50,$C0,$12,	$03,$50,$80,$16,	$04,$50,$00,$00,	$04,$50,$C0,$03,	$04,$50,$40,$0B,	$04,$50,$00,$0F,	$04,$50,$80,$16,	$05,$50,$00,$00,	$05,$50,$C0,$03,	$05,$50,$40,$0B,	$05,$50,$C0,$12,	$05,$50,$80,$16,	$06,$50,$00,$00,	$06,$50,$80,$07,	$06,$50,$00,$0F,	$06,$50,$C0,$12,	$06,$50,$40,$1A,	$07,$50,$C0,$03,	$07,$50,$40,$0B,	$07,$50,$C0,$12,	$07,$50,$80,$16,	$08,$50,$00,$00,	$08,$50,$80,$07,	$08,$50,$00,$0F,	$08,$50,$80,$16,	$08,$50,$40,$1A,	$09,$50,$C0,$03,	$09,$50,$40,$0B,	$09,$50,$C0,$12,	$09,$50,$40,$1A,	$0A,$50,$00,$00,	$0A,$50,$80,$07,	$0A,$50,$00,$0F,	$0A,$50,$80,$16,	$0A,$50,$40,$1A,	$0B,$50,$C0,$03,	$0B,$50,$40,$0B,	$0B,$50,$00,$0F,	$0B,$50,$80,$16,	$0C,$50,$00,$00,	$0C,$50,$C0,$03,	$0C,$50,$40,$0B,	$0C,$50,$C0,$12,	$0C,$50,$80,$16,	$0D,$50,$00,$00,	$0D,$50,$C0,$03,	$0D,$50,$40,$0B,	$0D,$50,$00,$0F,	$0D,$50,$80,$16,	$0D,$50,$40,$1A,	$0E,$50,$00,$00,	$0E,$50,$80,$07,	$0E,$50,$40,$0B,	$0E,$50,$00,$0F,	$0E,$50,$C0,$12,	$0E,$50,$40,$1A,	$0F,$50,$00,$00,	$0F,$50,$C0,$03,	$0F,$50,$80,$07,	$0F,$50,$40,$0B,	$0F,$50,$00,$0F,	$0F,$50,$C0,$12,	$0F,$50,$80,$16,	$0F,$50,$40,$1A,	$10,$50,$00,$00,	$10,$50,$C0,$03,	$10,$50,$C0,$03,	$10,$50,$80,$07,	$10,$50,$40,$0B,	$10,$50,$40,$0B,	$10,$50,$00,$0F,	$10,$50,$C0,$12,	$10,$50,$C0,$12,	$10,$50,$80,$16,	$10,$50,$80,$16,	$10,$50,$80,$16,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A,	$10,$50,$40,$1A
 
 
-
-
 badger:
 
 defb	0,	0,	0,	0,	0,	0,	0,	0,	1,	255,	240,	0,	0,	0,	0
@@ -1313,4 +1309,3 @@ defb	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
 
 
 badger2:
-
