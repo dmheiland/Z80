@@ -1,0 +1,2945 @@
+﻿<!DOCTYPE HTML>
+<!-- saved from url=(0025)http://clrhome.org/table/ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><HTML 
+xmlns="http://www.w3.org/1999/xhtml"><HEAD><META content="IE=11.0000" 
+http-equiv="X-UA-Compatible">
+ <TITLE>Z80 instruction set - ClrHome</TITLE> 
+<META http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<STYLE type="text/css">body>div{width:960px;margin:0 auto 200px auto;font-family:Verdana;font-size:24px;}#s{font-size:1em;font-family:Verdana;width:640px;}h3,p{text-align:center;}table{table-layout:fixed;width:960px;}table,.tt{font-size:0.5em;}th{color:#999;}tr:first-child{height:2em;}td{font-family:"Courier New",Courier;font-weight:bold;background-color:#ccc;color:#333;padding:6px;word-wrap:break-word;}.un{background-color:#f66;}.ln{padding:0;}.hr{background-color:#000;color:#666;}th,.bk{background-color:#333;}.hd,td:hover,td a{background-color:#999;color:#000;}td:first-child{width:1em;background-color:transparent;}td a{display:block;padding:6px;font-family:Verdana;text-align:center;}td a:hover,.tt{background-color:#fff;text-decoration:none;}.tt{position:absolute;width:160px;border:3px solid #000;padding:6px;}#banner{position:fixed;top:0;right:50%;z-index:9;width:200px;margin-right:-420px;font-family:'Times New Roman',Times,serif;}#banner>a{display:block;border:2px solid #aa8;border-top:0;padding:8px 4px;background:#cca;color:#331;text-decoration:none;text-align:center;font-style:italic;-webkit-transition:background-color 200ms;-o-transition:background-color 200ms;-ms-transition:background-color 200ms;-moz-transition:background-color 200ms;transition:background-color 200ms;}#banner>a:hover{background:#eec;}#banner span{display:block;font-size:0.6em;}#banner img{display:block;width:100%;border:0;}#banner cite{display:block;padding:4px 8px;background:#aa8;color:#ddc;font-style:normal;}#banner cite img{float:right;width:96px;opacity:0.4;-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=40)';filter:alpha(opacity=40);-webkit-transition:opacity 200ms;-o-transition:opacity 200ms;-ms-transition:opacity 200ms;-moz-transition:opacity 200ms;transition:opacity 200ms;}#banner cite a:hover img{opacity:0.1;-ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=10)';filter:alpha(opacity=10);}</STYLE>
+ <LINK href="/favicon.ico" rel="shortcut icon"> 
+<SCRIPT src="Z80%20instruction%20set%20-%20ClrHome_files/jquery.min.js" type="text/javascript"></SCRIPT>
+ 
+<SCRIPT src="Z80%20instruction%20set%20-%20ClrHome_files/ga.js" type="text/javascript"></SCRIPT>
+ 
+<SCRIPT type="text/javascript">// <![CDATA[
+			function nuf() {
+				window.location.hash = $('#s').val();
+			}
+			
+			function fun() {
+				if (window.location.hash != '#' + $('#s').val())
+					$('#s').val(window.location.hash.slice(1));
+				
+				$('td').each(function() {
+					if ($(this).text().indexOf($('#s').val()) == -1)
+						$(this).addClass('bk');
+					else
+						$(this).removeClass('bk');
+				});
+			}
+			
+			function rm() {
+				$('.tt').remove();
+			}
+			
+			$(function() {
+				cm = rt = 0;
+				
+				$('th').hover(function() {
+					$(this).addClass('hr');
+					
+					if ($(this).index() == 0)
+						$(this).siblings().addClass('hd');
+					else
+						$(this).parent().parent().find('td:nth-child(' + ($(this).index() + 1).toString() + ')').addClass('hd');
+				}, function() {
+					$(this).removeClass('hr');
+					
+					if ($(this).index() == 0)
+						$(this).siblings().removeClass('hd');
+					else
+						$(this).parent().parent().find('td:nth-child(' + ($(this).index() + 1).toString() + ')').removeClass('hd');
+				});
+
+				$('#s').keyup(function(e) {
+					clearTimeout(rt);
+					rt = setTimeout(nuf, 400);
+				});
+				
+				$('a').click(function() {
+					$('body').stop(true, true).animate({scrollTop: $($(this).attr('href')).position().top}, 200);
+					return false;
+				});
+
+				$('td:not(:has(\'a\')):not(:first-child)').mouseover(function(e) {
+					var desc = '';
+					var val = $(this).attr('axis').split('|');
+					var flags = ['C', 'N', 'P/V', 'H', 'Z', 'S'];
+					
+					for (i = 0; i < 6; i++) {
+						desc += '<br><b>' + flags[i] + ':</b> ';
+						
+						switch (val[0].charAt(i)) {
+							case '-':
+								desc += 'unaffected';
+								break;
+							case '+':
+								desc += 'affected as defined';
+								break;
+							case 'P':
+								desc += 'detects parity';
+								break;
+							case 'V':
+								desc += 'detects overflow';
+								break;
+							case '1':
+								desc += 'set';
+								break;
+							case '0':
+								desc += 'reset';
+								break;
+							case '*':
+								desc += 'exceptional';
+							default:
+								desc += 'unknown';
+						}
+					}
+					
+					rm();
+					$('body > div').append('<div class="tt"><b>Opcode:</b> ' + $(this).closest('table').attr('title') + '0123456789ABCDEF'.charAt($(this).parent().index() - 1) + '0123456789ABCDEF'.charAt($(this).index() - 1) + '<br><b>Size (bytes):</b> ' + val[1] + '<br><b>Time (clock cycles):</b> ' + val[2] + desc + '<br>' + val[3] + '</div>').children('.tt').css({'left': e.pageX + 10, 'top': e.pageY + 20});
+				}).mousemove(function(e) {
+					$('.tt').css({'left': e.pageX + 10, 'top': e.pageY + 20});
+				});
+				
+				$('#banner').mouseenter(function() {
+					$(this).stop().animate({top: 0});
+				}).mouseleave(function() {
+					$(this).stop().animate({top: -120});
+				});
+				
+				$(window).keydown(function(e) {
+					if (e.keyCode == 191) {
+						$('#s').focus();
+						return false;
+					}
+					
+					if (e.keyCode == 13 && $('#s').is(':focus')) {
+						clearTimeout(rt);
+						nuf();
+						
+						if ($.trim($('#s').val()).length) {
+							setTimeout(function() {
+								if (cm != $('#s').val()) {
+									cm = $('#s').val();
+									ls = $('tr').has('td:not(.bk)');
+									ls.index = 0;
+								} else {
+									ls.index++;
+									
+									if (ls.index == ls.length)
+										ls.index = 0;
+								}
+								
+								$('body').stop(true, true).animate({scrollTop: ls.eq(ls.index).position().top}, 'fast');
+							}, 100);
+						}
+					}
+				});
+				
+				$('table').mouseout(rm);
+				window.onhashchange = fun;
+				fun();
+			});
+		// ]]></SCRIPT>
+ 
+<META name="GENERATOR" content="MSHTML 11.00.9600.17690"></HEAD> 
+<BODY>
+<DIV>
+<P>Type here to search: <INPUT id="s" accesskey="s" type="text"></P>
+<H3 id="table1">Main instructions</H3>
+<TABLE title="">
+  <TBODY>
+  <TR>
+    <TD></TD>
+    <TH>0</TH>
+    <TH>1</TH>
+    <TH>2</TH>
+    <TH>3</TH>
+    <TH>4</TH>
+    <TH>5</TH>
+    <TH>6</TH>
+    <TH>7</TH>
+    <TH>8</TH>
+    <TH>9</TH>
+    <TH>A</TH>
+    <TH>B</TH>
+    <TH>C</TH>
+    <TH>D</TH>
+    <TH>E</TH>
+    <TH>F</TH></TR>
+  <TR>
+    <TH>0</TH>
+    <TD axis="------|1|4|No operation is performed.">nop</TD>
+    <TD axis="------|3|10|Loads ** into bc.">ld bc,**</TD>
+    <TD 
+      axis="------|1|7|Stores a into the memory location pointed to by bc.">ld 
+      (bc),a</TD>
+    <TD axis="------|1|6|Adds one to bc.">inc bc</TD>
+    <TD axis="-+V+++|1|4|Adds one to b.">inc b</TD>
+    <TD axis="-+V+++|1|4|Subtracts one from b.">dec b</TD>
+    <TD axis="------|2|7|Loads * into b.">ld b,*</TD>
+    <TD axis="+0-0--|1|4|The contents of a are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlca</TD>
+    <TD axis="------|1|4|Exchanges the 16-bit contents of af and af'.">ex 
+      af,af'</TD>
+    <TD axis="++-+--|1|11|The value of bc is added to hl.">add hl,bc</TD>
+    <TD axis="------|1|7|Loads the value pointed to by bc into a.">ld 
+a,(bc)</TD>
+    <TD axis="------|1|6|Subtracts one from bc.">dec bc</TD>
+    <TD axis="-+V+++|1|4|Adds one to c.">inc c</TD>
+    <TD axis="-+V+++|1|4|Subtracts one from c.">dec c</TD>
+    <TD axis="------|2|7|Loads * into c.">ld c,*</TD>
+    <TD axis="+0-0--|1|4|The contents of a are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrca</TD></TR>
+  <TR>
+    <TH>1</TH>
+    <TD axis="------|2|13/8|The b register is decremented, and if not zero, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.">djnz 
+      *</TD>
+    <TD axis="------|3|10|Loads ** into de.">ld de,**</TD>
+    <TD 
+      axis="------|1|7|Stores a into the memory location pointed to by de.">ld 
+      (de),a</TD>
+    <TD axis="------|1|6|Adds one to de.">inc de</TD>
+    <TD axis="-+V+++|1|4|Adds one to d.">inc d</TD>
+    <TD axis="-+V+++|1|4|Subtracts one from d.">dec d</TD>
+    <TD axis="------|2|7|Loads * into d.">ld d,*</TD>
+    <TD axis="+0-0--|1|4|The contents of a are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rla</TD>
+    <TD axis="------|2|12|The signed value * is added to pc. The jump is measured from the start of the instruction opcode.">jr 
+      *</TD>
+    <TD axis="++-+--|1|11|The value of de is added to hl.">add hl,de</TD>
+    <TD axis="------|1|7|Loads the value pointed to by de into a.">ld 
+a,(de)</TD>
+    <TD axis="------|1|6|Subtracts one from de.">dec de</TD>
+    <TD axis="-+V+++|1|4|Adds one to e.">inc e</TD>
+    <TD axis="-+V+++|1|4|Subtracts one from e.">dec e</TD>
+    <TD axis="------|2|7|Loads * into e.">ld e,*</TD>
+    <TD axis="+0-0--|1|4|The contents of a are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rra</TD></TR>
+  <TR>
+    <TH>2</TH>
+    <TD axis="------|2|12/7|If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.">jr 
+      nz,*</TD>
+    <TD axis="------|3|10|Loads ** into hl.">ld hl,**</TD>
+    <TD 
+      axis="------|3|16|Stores hl into the memory location pointed to by **.">ld 
+      (**),hl</TD>
+    <TD axis="------|1|6|Adds one to hl.">inc hl</TD>
+    <TD axis="-+V+++|1|4|Adds one to h.">inc h</TD>
+    <TD axis="-+V+++|1|4|Subtracts one from h.">dec h</TD>
+    <TD axis="------|2|7|Loads * into h.">ld h,*</TD>
+    <TD 
+      axis="*-P*++|1|4|Adjusts a for BCD addition and subtraction operations.">daa</TD>
+    <TD axis="------|2|12/7|If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.">jr 
+      z,*</TD>
+    <TD axis="++-+--|1|11|The value of hl is added to hl.">add hl,hl</TD>
+    <TD axis="------|3|16|Loads the value pointed to by ** into hl.">ld 
+    hl,(**)</TD>
+    <TD axis="------|1|6|Subtracts one from hl.">dec hl</TD>
+    <TD axis="-+V+++|1|4|Adds one to l.">inc l</TD>
+    <TD axis="-+V+++|1|4|Subtracts one from l.">dec l</TD>
+    <TD axis="------|2|7|Loads * into l.">ld l,*</TD>
+    <TD 
+      axis="-1-1--|1|4|The contents of a are inverted (one's complement).">cpl</TD></TR>
+  <TR>
+    <TH>3</TH>
+    <TD axis="------|2|12/7|If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.">jr 
+      nc,*</TD>
+    <TD axis="------|3|10|Loads ** into sp.">ld sp,**</TD>
+    <TD 
+      axis="------|3|13|Stores a into the memory location pointed to by **.">ld 
+      (**),a</TD>
+    <TD axis="------|1|6|Adds one to sp.">inc sp</TD>
+    <TD axis="-+V+++|1|11|Adds one to (hl).">inc (hl)</TD>
+    <TD axis="-+V+++|1|11|Subtracts one from (hl).">dec (hl)</TD>
+    <TD axis="------|2|10|Loads * into (hl).">ld (hl),*</TD>
+    <TD axis="10-0--|1|4|Sets the carry flag.">scf</TD>
+    <TD axis="------|2|12/7|If condition cc is true, the signed value * is added to pc. The jump is measured from the start of the instruction opcode.">jr 
+      c,*</TD>
+    <TD axis="++-+--|1|11|The value of hl is added to hl.">add hl,sp</TD>
+    <TD axis="------|3|13|Loads the value pointed to by ** into a.">ld 
+    a,(**)</TD>
+    <TD axis="------|1|6|Subtracts one from sp.">dec sp</TD>
+    <TD axis="-+V+++|1|4|Adds one to a.">inc a</TD>
+    <TD axis="-+V+++|1|4|Subtracts one from a.">dec a</TD>
+    <TD axis="------|2|7|Loads * into a.">ld a,*</TD>
+    <TD axis="*0-*--|1|4|Inverts the carry flag.">ccf</TD></TR>
+  <TR>
+    <TH>4</TH>
+    <TD axis="------|1|4|The contents of b are loaded into b.">ld b,b</TD>
+    <TD axis="------|1|4|The contents of c are loaded into b.">ld b,c</TD>
+    <TD axis="------|1|4|The contents of d are loaded into b.">ld b,d</TD>
+    <TD axis="------|1|4|The contents of e are loaded into b.">ld b,e</TD>
+    <TD axis="------|1|4|The contents of h are loaded into b.">ld b,h</TD>
+    <TD axis="------|1|4|The contents of l are loaded into b.">ld b,l</TD>
+    <TD axis="------|1|7|The contents of (hl) are loaded into b.">ld b,(hl)</TD>
+    <TD axis="------|1|4|The contents of a are loaded into b.">ld b,a</TD>
+    <TD axis="------|1|4|The contents of b are loaded into c.">ld c,b</TD>
+    <TD axis="------|1|4|The contents of c are loaded into c.">ld c,c</TD>
+    <TD axis="------|1|4|The contents of d are loaded into c.">ld c,d</TD>
+    <TD axis="------|1|4|The contents of e are loaded into c.">ld c,e</TD>
+    <TD axis="------|1|4|The contents of h are loaded into c.">ld c,h</TD>
+    <TD axis="------|1|4|The contents of l are loaded into c.">ld c,l</TD>
+    <TD axis="------|1|7|The contents of (hl) are loaded into c.">ld c,(hl)</TD>
+    <TD axis="------|1|4|The contents of a are loaded into c.">ld c,a</TD></TR>
+  <TR>
+    <TH>5</TH>
+    <TD axis="------|1|4|The contents of b are loaded into d.">ld d,b</TD>
+    <TD axis="------|1|4|The contents of c are loaded into d.">ld d,c</TD>
+    <TD axis="------|1|4|The contents of d are loaded into d.">ld d,d</TD>
+    <TD axis="------|1|4|The contents of e are loaded into d.">ld d,e</TD>
+    <TD axis="------|1|4|The contents of h are loaded into d.">ld d,h</TD>
+    <TD axis="------|1|4|The contents of l are loaded into d.">ld d,l</TD>
+    <TD axis="------|1|7|The contents of (hl) are loaded into d.">ld d,(hl)</TD>
+    <TD axis="------|1|4|The contents of a are loaded into d.">ld d,a</TD>
+    <TD axis="------|1|4|The contents of b are loaded into e.">ld e,b</TD>
+    <TD axis="------|1|4|The contents of c are loaded into e.">ld e,c</TD>
+    <TD axis="------|1|4|The contents of d are loaded into e.">ld e,d</TD>
+    <TD axis="------|1|4|The contents of e are loaded into e.">ld e,e</TD>
+    <TD axis="------|1|4|The contents of h are loaded into e.">ld e,h</TD>
+    <TD axis="------|1|4|The contents of l are loaded into e.">ld e,l</TD>
+    <TD axis="------|1|7|The contents of (hl) are loaded into e.">ld e,(hl)</TD>
+    <TD axis="------|1|4|The contents of a are loaded into e.">ld e,a</TD></TR>
+  <TR>
+    <TH>6</TH>
+    <TD axis="------|1|4|The contents of b are loaded into h.">ld h,b</TD>
+    <TD axis="------|1|4|The contents of c are loaded into h.">ld h,c</TD>
+    <TD axis="------|1|4|The contents of d are loaded into h.">ld h,d</TD>
+    <TD axis="------|1|4|The contents of e are loaded into h.">ld h,e</TD>
+    <TD axis="------|1|4|The contents of h are loaded into h.">ld h,h</TD>
+    <TD axis="------|1|4|The contents of l are loaded into h.">ld h,l</TD>
+    <TD axis="------|1|7|The contents of (hl) are loaded into h.">ld h,(hl)</TD>
+    <TD axis="------|1|4|The contents of a are loaded into h.">ld h,a</TD>
+    <TD axis="------|1|4|The contents of b are loaded into l.">ld l,b</TD>
+    <TD axis="------|1|4|The contents of c are loaded into l.">ld l,c</TD>
+    <TD axis="------|1|4|The contents of d are loaded into l.">ld l,d</TD>
+    <TD axis="------|1|4|The contents of e are loaded into l.">ld l,e</TD>
+    <TD axis="------|1|4|The contents of h are loaded into l.">ld l,h</TD>
+    <TD axis="------|1|4|The contents of l are loaded into l.">ld l,l</TD>
+    <TD axis="------|1|7|The contents of (hl) are loaded into l.">ld l,(hl)</TD>
+    <TD axis="------|1|4|The contents of a are loaded into l.">ld l,a</TD></TR>
+  <TR>
+    <TH>7</TH>
+    <TD axis="------|1|7|The contents of b are loaded into (hl).">ld (hl),b</TD>
+    <TD axis="------|1|7|The contents of c are loaded into (hl).">ld (hl),c</TD>
+    <TD axis="------|1|7|The contents of d are loaded into (hl).">ld (hl),d</TD>
+    <TD axis="------|1|7|The contents of e are loaded into (hl).">ld (hl),e</TD>
+    <TD axis="------|1|7|The contents of h are loaded into (hl).">ld (hl),h</TD>
+    <TD axis="------|1|7|The contents of l are loaded into (hl).">ld (hl),l</TD>
+    <TD axis="------|1|4|Suspends CPU operation until an interrupt or reset occurs.">halt</TD>
+    <TD axis="------|1|7|The contents of a are loaded into (hl).">ld (hl),a</TD>
+    <TD axis="------|1|4|The contents of b are loaded into a.">ld a,b</TD>
+    <TD axis="------|1|4|The contents of c are loaded into a.">ld a,c</TD>
+    <TD axis="------|1|4|The contents of d are loaded into a.">ld a,d</TD>
+    <TD axis="------|1|4|The contents of e are loaded into a.">ld a,e</TD>
+    <TD axis="------|1|4|The contents of h are loaded into a.">ld a,h</TD>
+    <TD axis="------|1|4|The contents of l are loaded into a.">ld a,l</TD>
+    <TD axis="------|1|7|The contents of (hl) are loaded into a.">ld a,(hl)</TD>
+    <TD axis="------|1|4|The contents of a are loaded into a.">ld a,a</TD></TR>
+  <TR>
+    <TH>8</TH>
+    <TD axis="++V+++|1|4|Adds b to a.">add a,b</TD>
+    <TD axis="++V+++|1|4|Adds c to a.">add a,c</TD>
+    <TD axis="++V+++|1|4|Adds d to a.">add a,d</TD>
+    <TD axis="++V+++|1|4|Adds e to a.">add a,e</TD>
+    <TD axis="++V+++|1|4|Adds h to a.">add a,h</TD>
+    <TD axis="++V+++|1|4|Adds l to a.">add a,l</TD>
+    <TD axis="++V+++|1|7|Adds (hl) to a.">add a,(hl)</TD>
+    <TD axis="++V+++|1|4|Adds a to a.">add a,a</TD>
+    <TD axis="++V+++|1|4|Adds b and the carry flag to a.">adc a,b</TD>
+    <TD axis="++V+++|1|4|Adds c and the carry flag to a.">adc a,c</TD>
+    <TD axis="++V+++|1|4|Adds d and the carry flag to a.">adc a,d</TD>
+    <TD axis="++V+++|1|4|Adds e and the carry flag to a.">adc a,e</TD>
+    <TD axis="++V+++|1|4|Adds h and the carry flag to a.">adc a,h</TD>
+    <TD axis="++V+++|1|4|Adds l and the carry flag to a.">adc a,l</TD>
+    <TD axis="++V+++|1|7|Adds (hl) and the carry flag to a.">adc a,(hl)</TD>
+    <TD axis="++V+++|1|4|Adds a and the carry flag to a.">adc a,a</TD></TR>
+  <TR>
+    <TH>9</TH>
+    <TD axis="++V+++|1|4|Subtracts b from a.">sub b</TD>
+    <TD axis="++V+++|1|4|Subtracts c from a.">sub c</TD>
+    <TD axis="++V+++|1|4|Subtracts d from a.">sub d</TD>
+    <TD axis="++V+++|1|4|Subtracts e from a.">sub e</TD>
+    <TD axis="++V+++|1|4|Subtracts h from a.">sub h</TD>
+    <TD axis="++V+++|1|4|Subtracts l from a.">sub l</TD>
+    <TD axis="++V+++|1|7|Subtracts (hl) from a.">sub (hl)</TD>
+    <TD axis="++V+++|1|4|Subtracts a from a.">sub a</TD>
+    <TD axis="++V+++|1|4|Subtracts b and the carry flag from a.">sbc a,b</TD>
+    <TD axis="++V+++|1|4|Subtracts c and the carry flag from a.">sbc a,c</TD>
+    <TD axis="++V+++|1|4|Subtracts d and the carry flag from a.">sbc a,d</TD>
+    <TD axis="++V+++|1|4|Subtracts e and the carry flag from a.">sbc a,e</TD>
+    <TD axis="++V+++|1|4|Subtracts h and the carry flag from a.">sbc a,h</TD>
+    <TD axis="++V+++|1|4|Subtracts l and the carry flag from a.">sbc a,l</TD>
+    <TD axis="++V+++|1|7|Subtracts (hl) and the carry flag from a.">sbc 
+    a,(hl)</TD>
+    <TD axis="++V+++|1|4|Subtracts a and the carry flag from a.">sbc a,a</TD></TR>
+  <TR>
+    <TH>A</TH>
+    <TD axis="00P1++|1|4|Bitwise AND on a with b.">and b</TD>
+    <TD axis="00P1++|1|4|Bitwise AND on a with c.">and c</TD>
+    <TD axis="00P1++|1|4|Bitwise AND on a with d.">and d</TD>
+    <TD axis="00P1++|1|4|Bitwise AND on a with e.">and e</TD>
+    <TD axis="00P1++|1|4|Bitwise AND on a with h.">and h</TD>
+    <TD axis="00P1++|1|4|Bitwise AND on a with l.">and l</TD>
+    <TD axis="00P1++|1|7|Bitwise AND on a with (hl).">and (hl)</TD>
+    <TD axis="00P1++|1|4|Bitwise AND on a with a.">and a</TD>
+    <TD axis="00P0++|1|4|Bitwise XOR on a with b.">xor b</TD>
+    <TD axis="00P0++|1|4|Bitwise XOR on a with c.">xor c</TD>
+    <TD axis="00P0++|1|4|Bitwise XOR on a with d.">xor d</TD>
+    <TD axis="00P0++|1|4|Bitwise XOR on a with e.">xor e</TD>
+    <TD axis="00P0++|1|4|Bitwise XOR on a with h.">xor h</TD>
+    <TD axis="00P0++|1|4|Bitwise XOR on a with l.">xor l</TD>
+    <TD axis="00P0++|1|7|Bitwise XOR on a with (hl).">xor (hl)</TD>
+    <TD axis="00P0++|1|4|Bitwise XOR on a with a.">xor a</TD></TR>
+  <TR>
+    <TH>B</TH>
+    <TD axis="00P0++|1|4|Bitwise OR on a with b.">or b</TD>
+    <TD axis="00P0++|1|4|Bitwise OR on a with c.">or c</TD>
+    <TD axis="00P0++|1|4|Bitwise OR on a with d.">or d</TD>
+    <TD axis="00P0++|1|4|Bitwise OR on a with e.">or e</TD>
+    <TD axis="00P0++|1|4|Bitwise OR on a with h.">or h</TD>
+    <TD axis="00P0++|1|4|Bitwise OR on a with l.">or l</TD>
+    <TD axis="00P0++|1|7|Bitwise OR on a with (hl).">or (hl)</TD>
+    <TD axis="00P0++|1|4|Bitwise OR on a with a.">or a</TD>
+    <TD axis="++V+++|1|4|Subtracts b from a and affects flags according to the result. a is not modified.">cp 
+      b</TD>
+    <TD axis="++V+++|1|4|Subtracts c from a and affects flags according to the result. a is not modified.">cp 
+      c</TD>
+    <TD axis="++V+++|1|4|Subtracts d from a and affects flags according to the result. a is not modified.">cp 
+      d</TD>
+    <TD axis="++V+++|1|4|Subtracts e from a and affects flags according to the result. a is not modified.">cp 
+      e</TD>
+    <TD axis="++V+++|1|4|Subtracts h from a and affects flags according to the result. a is not modified.">cp 
+      h</TD>
+    <TD axis="++V+++|1|4|Subtracts l from a and affects flags according to the result. a is not modified.">cp 
+      l</TD>
+    <TD axis="++V+++|1|7|Subtracts (hl) from a and affects flags according to the result. a is not modified.">cp 
+      (hl)</TD>
+    <TD axis="++V+++|1|4|Subtracts a from a and affects flags according to the result. a is not modified.">cp 
+      a</TD></TR>
+  <TR>
+    <TH>C</TH>
+    <TD axis="------|1|11/5|If condition cc is true, the top stack entry is popped into pc.">ret 
+      nz</TD>
+    <TD axis="------|1|10|The memory location pointed to by sp is stored into c and sp is incremented. The memory location pointed to by sp is stored into b and sp is incremented again.">pop 
+      bc</TD>
+    <TD axis="------|3|10|If condition cc is true, ** is copied to pc.">jp 
+      nz,**</TD>
+    <TD axis="------|3|10|** is copied to pc.">jp **</TD>
+    <TD axis="------|3|17/10|If condition cc is true, the current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      nz,**</TD>
+    <TD axis="------|1|11|sp is decremented and b is stored into the memory location pointed to by sp. sp is decremented again and c is stored into the memory location pointed to by sp.">push 
+      bc</TD>
+    <TD axis="++V+++|2|7|Adds * to a.">add a,*</TD>
+    <TD axis="------|1|11|The current pc value plus one is pushed onto the stack, then is loaded with 00h.">rst 
+      00h</TD>
+    <TD axis="------|1|11/5|If condition cc is true, the top stack entry is popped into pc.">ret 
+      z</TD>
+    <TD axis="------|1|10|The top stack entry is popped into pc.">ret</TD>
+    <TD axis="------|3|10|If condition cc is true, ** is copied to pc.">jp 
+    z,**</TD>
+    <TD class="ln"><A href="http://clrhome.org/table/#table3">BITS</A></TD>
+    <TD axis="------|3|17/10|If condition cc is true, the current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      z,**</TD>
+    <TD axis="------|3|17|The current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      **</TD>
+    <TD axis="++V+++|2|7|Adds * and the carry flag to a.">adc a,*</TD>
+    <TD axis="------|1|11|The current pc value plus one is pushed onto the stack, then is loaded with 08h.">rst 
+      08h</TD></TR>
+  <TR>
+    <TH>D</TH>
+    <TD axis="------|1|11/5|If condition cc is true, the top stack entry is popped into pc.">ret 
+      nc</TD>
+    <TD axis="------|1|10|The memory location pointed to by sp is stored into e and sp is incremented. The memory location pointed to by sp is stored into d and sp is incremented again.">pop 
+      de</TD>
+    <TD axis="------|3|10|If condition cc is true, ** is copied to pc.">jp 
+      nc,**</TD>
+    <TD axis="------|2|11|The value of a is written to port *.">out (*),a</TD>
+    <TD axis="------|3|17/10|If condition cc is true, the current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      nc,**</TD>
+    <TD axis="------|1|11|sp is decremented and d is stored into the memory location pointed to by sp. sp is decremented again and e is stored into the memory location pointed to by sp.">push 
+      de</TD>
+    <TD axis="++V+++|2|7|Subtracts * from a.">sub *</TD>
+    <TD axis="------|1|11|The current pc value plus one is pushed onto the stack, then is loaded with 10h.">rst 
+      10h</TD>
+    <TD axis="------|1|11/5|If condition cc is true, the top stack entry is popped into pc.">ret 
+      c</TD>
+    <TD axis="------|1|4|Exchanges the 16-bit contents of bc, de, and hl with bc', de', and hl'.">exx</TD>
+    <TD axis="------|3|10|If condition cc is true, ** is copied to pc.">jp 
+    c,**</TD>
+    <TD axis="------|2|11|A byte from port * is written to a.">in a,(*)</TD>
+    <TD axis="------|3|17/10|If condition cc is true, the current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      c,**</TD>
+    <TD class="ln"><A href="http://clrhome.org/table/#table4">IX</A></TD>
+    <TD axis="++V+++|2|7|Subtracts * and the carry flag from a.">sbc a,*</TD>
+    <TD axis="------|1|11|The current pc value plus one is pushed onto the stack, then is loaded with 18h.">rst 
+      18h</TD></TR>
+  <TR>
+    <TH>E</TH>
+    <TD axis="------|1|11/5|If condition cc is true, the top stack entry is popped into pc.">ret 
+      po</TD>
+    <TD axis="------|1|10|The memory location pointed to by sp is stored into l and sp is incremented. The memory location pointed to by sp is stored into h and sp is incremented again.">pop 
+      hl</TD>
+    <TD axis="------|3|10|If condition cc is true, ** is copied to pc.">jp 
+      po,**</TD>
+    <TD axis="------|1|19|Exchanges (sp) with l, and (sp+1) with h.">ex 
+    (sp),hl</TD>
+    <TD axis="------|3|17/10|If condition cc is true, the current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      po,**</TD>
+    <TD axis="------|1|11|sp is decremented and h is stored into the memory location pointed to by sp. sp is decremented again and l is stored into the memory location pointed to by sp.">push 
+      hl</TD>
+    <TD axis="00P1++|2|7|Bitwise AND on a with *.">and *</TD>
+    <TD axis="------|1|11|The current pc value plus one is pushed onto the stack, then is loaded with 20h.">rst 
+      20h</TD>
+    <TD axis="------|1|11/5|If condition cc is true, the top stack entry is popped into pc.">ret 
+      pe</TD>
+    <TD axis="------|1|4|Loads the value of hl into pc.">jp (hl)</TD>
+    <TD axis="------|3|10|If condition cc is true, ** is copied to pc.">jp 
+      pe,**</TD>
+    <TD axis="------|1|4|Exchanges the 16-bit contents of de and hl.">ex 
+    de,hl</TD>
+    <TD axis="------|3|17/10|If condition cc is true, the current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      pe,**</TD>
+    <TD class="ln"><A href="http://clrhome.org/table/#table2">EXTD</A></TD>
+    <TD axis="00P0++|2|7|Bitwise XOR on a with *.">xor *</TD>
+    <TD axis="------|1|11|The current pc value plus one is pushed onto the stack, then is loaded with 28h.">rst 
+      28h</TD></TR>
+  <TR>
+    <TH>F</TH>
+    <TD axis="------|1|11/5|If condition cc is true, the top stack entry is popped into pc.">ret 
+      p</TD>
+    <TD axis="------|1|10|The memory location pointed to by sp is stored into f and sp is incremented. The memory location pointed to by sp is stored into a and sp is incremented again.">pop 
+      af</TD>
+    <TD axis="------|3|10|If condition cc is true, ** is copied to pc.">jp 
+    p,**</TD>
+    <TD axis="------|1|4|Resets both interrupt flip-flops, thus prenting maskable interrupts from triggering.">di</TD>
+    <TD axis="------|3|17/10|If condition cc is true, the current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      p,**</TD>
+    <TD axis="------|1|11|sp is decremented and a is stored into the memory location pointed to by sp. sp is decremented again and f is stored into the memory location pointed to by sp.">push 
+      af</TD>
+    <TD axis="00P0++|2|7|Bitwise OR on a with *.">or *</TD>
+    <TD axis="------|1|11|The current pc value plus one is pushed onto the stack, then is loaded with 30h.">rst 
+      30h</TD>
+    <TD axis="------|1|11/5|If condition cc is true, the top stack entry is popped into pc.">ret 
+      m</TD>
+    <TD axis="------|1|6|Loads the value of hl into sp.">ld sp,hl</TD>
+    <TD axis="------|3|10|If condition cc is true, ** is copied to pc.">jp 
+    m,**</TD>
+    <TD axis="------|1|4|Sets both interrupt flip-flops, thus allowing maskable interrupts to occur. An interrupt will not occur until after the immediatedly following instruction.">ei</TD>
+    <TD axis="------|3|17/10|If condition cc is true, the current pc value plus three is pushed onto the stack, then is loaded with **.">call 
+      m,**</TD>
+    <TD class="ln"><A href="http://clrhome.org/table/#table6">IY</A></TD>
+    <TD axis="++V+++|2|7|Subtracts * from a and affects flags according to the result. a is not modified.">cp 
+      *</TD>
+    <TD axis="------|1|11|The current pc value plus one is pushed onto the stack, then is loaded with 38h.">rst 
+      38h</TD></TR></TBODY></TABLE>
+<H3 id="table2">Extended instructions (ED)</H3>
+<TABLE title="ED">
+  <TBODY>
+  <TR>
+    <TD></TD>
+    <TH>0</TH>
+    <TH>1</TH>
+    <TH>2</TH>
+    <TH>3</TH>
+    <TH>4</TH>
+    <TH>5</TH>
+    <TH>6</TH>
+    <TH>7</TH>
+    <TH>8</TH>
+    <TH>9</TH>
+    <TH>A</TH>
+    <TH>B</TH>
+    <TH>C</TH>
+    <TH>D</TH>
+    <TH>E</TH>
+    <TH>F</TH></TR>
+  <TR style="display: none;">
+    <TD></TD></TR>
+  <TR style="display: none;">
+    <TD></TD></TR>
+  <TR style="display: none;">
+    <TD></TD></TR>
+  <TR style="display: none;">
+    <TD></TD></TR>
+  <TR>
+    <TH>4</TH>
+    <TD axis="-0P0++|2|12|A byte from port c is written to b.">in b,(c)</TD>
+    <TD axis="------|2|12|The value of b is written to port c.">out (c),b</TD>
+    <TD axis="++V+++|2|15|Subtracts bc and the carry flag from hl.">sbc 
+    hl,bc</TD>
+    <TD 
+      axis="------|4|20|Stores bc into the memory location pointed to by **.">ld 
+      (**),bc</TD>
+    <TD axis="++V+++|2|8|The contents of a are negated (two's complement). Operation is the same as subtracting a from zero.">neg</TD>
+    <TD axis="------|2|14|Used at the end of a non-maskable interrupt service routine (located at $0066) to pop the top stack entry into PC. The value of IFF2 is copied to IFF1 so that maskable interrupts are allowed to continue as before. NMIs are not enabled on the TI.">retn</TD>
+    <TD axis="------|2|8|Sets interrupt mode 0.">im 0</TD>
+    <TD axis="------|2|9|Stores the value of a into register i or r.">ld 
+i,a</TD>
+    <TD axis="-0P0++|2|12|A byte from port c is written to c.">in c,(c)</TD>
+    <TD axis="------|2|12|The value of c is written to port c.">out (c),c</TD>
+    <TD axis="++V+++|2|15|Adds bc and the carry flag to hl.">adc hl,bc</TD>
+    <TD axis="------|4|20|Loads the value pointed to by ** into bc.">ld 
+    bc,(**)</TD>
+    <TD class="un" axis="++V+++|2|8|The contents of a are negated (two's complement). Operation is the same as subtracting a from zero.">neg</TD>
+    <TD axis="------|2|14|Used at the end of a maskable interrupt service routine. The top stack entry is popped into pc, and signals an I/O device that the interrupt has finished, allowing nested interrupts (not a consideration on the TI).">reti</TD>
+    <TD class="un" axis="------|2|8|Sets undefined interrupt mode 0/1.">im 
+    0/1</TD>
+    <TD axis="------|2|9|Stores the value of a into register i or r.">ld 
+  r,a</TD></TR>
+  <TR>
+    <TH>5</TH>
+    <TD axis="-0P0++|2|12|A byte from port c is written to c.">in d,(c)</TD>
+    <TD axis="------|2|12|The value of c is written to port c.">out (c),d</TD>
+    <TD axis="++V+++|2|15|Subtracts de and the carry flag from hl.">sbc 
+    hl,de</TD>
+    <TD 
+      axis="------|4|20|Stores de into the memory location pointed to by **.">ld 
+      (**),de</TD>
+    <TD class="un" axis="++V+++|2|8|The contents of a are negated (two's complement). Operation is the same as subtracting a from zero.">neg</TD>
+    <TD axis="------|2|14|Used at the end of a non-maskable interrupt service routine (located at $0066) to pop the top stack entry into PC. The value of IFF2 is copied to IFF1 so that maskable interrupts are allowed to continue as before. NMIs are not enabled on the TI.">retn</TD>
+    <TD axis="------|2|8|Sets interrupt mode 1.">im 1</TD>
+    <TD axis="-0*0++|2|9|Stores the value of register i or r into a.">ld 
+a,i</TD>
+    <TD axis="-0P0++|2|12|A byte from port c is written to e.">in e,(c)</TD>
+    <TD axis="------|2|12|The value of e is written to port c.">out (c),e</TD>
+    <TD axis="++V+++|2|15|Adds de and the carry flag to hl.">adc hl,de</TD>
+    <TD axis="------|4|20|Loads the value pointed to by ** into de.">ld 
+    de,(**)</TD>
+    <TD class="un" axis="++V+++|2|8|The contents of a are negated (two's complement). Operation is the same as subtracting a from zero.">neg</TD>
+    <TD axis="------|2|14|Used at the end of a non-maskable interrupt service routine (located at $0066) to pop the top stack entry into PC. The value of IFF2 is copied to IFF1 so that maskable interrupts are allowed to continue as before. NMIs are not enabled on the TI.">retn</TD>
+    <TD axis="------|2|8|Sets interrupt mode 2.">im 2</TD>
+    <TD axis="-0*0++|2|9|Stores the value of register i or r into a.">ld 
+  a,r</TD></TR>
+  <TR>
+    <TH>6</TH>
+    <TD axis="-0P0++|2|12|A byte from port c is written to h.">in h,(c)</TD>
+    <TD axis="------|2|12|The value of h is written to port c.">out (c),h</TD>
+    <TD axis="++V+++|2|15|Subtracts hl and the carry flag from hl.">sbc 
+    hl,hl</TD>
+    <TD class="un" axis="------|4|20|Stores hl into the memory location pointed to by **.">ld 
+      (**),hl</TD>
+    <TD class="un" axis="++V+++|2|8|The contents of a are negated (two's complement). Operation is the same as subtracting a from zero.">neg</TD>
+    <TD axis="------|2|14|Used at the end of a non-maskable interrupt service routine (located at $0066) to pop the top stack entry into PC. The value of IFF2 is copied to IFF1 so that maskable interrupts are allowed to continue as before. NMIs are not enabled on the TI.">retn</TD>
+    <TD axis="------|2|8|Sets interrupt mode 0.">im 0</TD>
+    <TD axis="-0P0++|2|18|The contents of the low-order nibble of (hl) are copied to the low-order nibble of a. The previous contents are copied to the high-order nibble of (hl). The previous contents are copied to the low-order nibble of (hl).">rrd</TD>
+    <TD axis="-0P0++|2|12|A byte from port c is written to l.">in l,(c)</TD>
+    <TD axis="------|2|12|The value of l is written to port c.">out (c),l</TD>
+    <TD axis="++V+++|2|15|Adds hl and the carry flag to hl.">adc hl,hl</TD>
+    <TD class="un" 
+      axis="------|4|20|Loads the value pointed to by ** into hl.">ld hl,(**)</TD>
+    <TD class="un" axis="++V+++|2|8|The contents of a are negated (two's complement). Operation is the same as subtracting a from zero.">neg</TD>
+    <TD axis="------|2|14|Used at the end of a non-maskable interrupt service routine (located at $0066) to pop the top stack entry into PC. The value of IFF2 is copied to IFF1 so that maskable interrupts are allowed to continue as before. NMIs are not enabled on the TI.">retn</TD>
+    <TD class="un" axis="------|2|8|Sets undefined interrupt mode 0/1.">im 
+    0/1</TD>
+    <TD axis="-0P0++|2|18|The contents of the low-order nibble of (hl) are copied to the high-order nibble of (hl). The previous contents are copied to the low-order nibble of a. The previous contents are copied to the low-order nibble of (hl).">rld</TD></TR>
+  <TR>
+    <TH>7</TH>
+    <TD class="un" axis="-0P0++|2|12|Inputs a byte from port c and affects flags only.">in 
+      (c)</TD>
+    <TD class="un" axis="------|2|12|Outputs a zero to port c.">out (c),0</TD>
+    <TD axis="++V+++|2|15|Subtracts hl and the carry flag from hl.">sbc 
+    hl,sp</TD>
+    <TD 
+      axis="------|4|20|Stores sp into the memory location pointed to by **.">ld 
+      (**),sp</TD>
+    <TD class="un" axis="++V+++|2|8|The contents of a are negated (two's complement). Operation is the same as subtracting a from zero.">neg</TD>
+    <TD axis="------|2|14|Used at the end of a non-maskable interrupt service routine (located at $0066) to pop the top stack entry into PC. The value of IFF2 is copied to IFF1 so that maskable interrupts are allowed to continue as before. NMIs are not enabled on the TI.">retn</TD>
+    <TD axis="------|2|8|Sets interrupt mode 1.">im 1</TD>
+    <TD></TD>
+    <TD axis="-0P0++|2|12|A byte from port c is written to a.">in a,(c)</TD>
+    <TD axis="------|2|12|The value of a is written to port c.">out (c),a</TD>
+    <TD axis="++V+++|2|15|Adds hl and the carry flag to hl.">adc hl,sp</TD>
+    <TD axis="------|4|20|Loads the value pointed to by ** into sp.">ld 
+    sp,(**)</TD>
+    <TD class="un" axis="++V+++|2|8|The contents of a are negated (two's complement). Operation is the same as subtracting a from zero.">neg</TD>
+    <TD axis="------|2|14|Used at the end of a non-maskable interrupt service routine (located at $0066) to pop the top stack entry into PC. The value of IFF2 is copied to IFF1 so that maskable interrupts are allowed to continue as before. NMIs are not enabled on the TI.">retn</TD>
+    <TD axis="------|2|8|Sets interrupt mode 2.">im 2</TD>
+    <TD></TD></TR>
+  <TR style="display: none;">
+    <TD></TD></TR>
+  <TR style="display: none;">
+    <TD></TD></TR>
+  <TR>
+    <TH>A</TH>
+    <TD axis="-0*0--|2|16|Transfers a byte of data from the memory location pointed to by hl to the memory location pointed to by de. Then hl and de are incremented and bc is decremented.">ldi</TD>
+    <TD axis="-1*+++|2|16|Compares the value of the memory location pointed to by hl with a. Then hl is incremented and bc is decremented.">cpi</TD>
+    <TD axis="-1  * |2|16|A byte from port c is written to the memory location pointed to by hl. Then hl is incremented and b is decremented.">ini</TD>
+    <TD axis="-1  * |2|16|A byte from the memory location pointed to by hl is written to port c. Then hl is incremented and b is decremented.">outi</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="-0*0--|2|16|Transfers a byte of data from the memory location pointed to by hl to the memory location pointed to by de. Then hl, de, and bc are decremented.">ldd</TD>
+    <TD axis="-1*+++|2|16|Compares the value of the memory location pointed to by hl with a. Then hl and bc are decremented.">cpd</TD>
+    <TD axis="-1  * |2|16|A byte from port c is written to the memory location pointed to by hl. Then hl and b are decremented.">ind</TD>
+    <TD axis="-1  * |2|16|A byte from the memory location pointed to by hl is written to port c. Then hl and b are decremented.">outd</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>B</TH>
+    <TD axis="-000--|2|21/16|Transfers a byte of data from the memory location pointed to by hl to the memory location pointed to by de. Then hl and de are incremented and bc is decremented. If bc is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.">ldir</TD>
+    <TD axis="-10+++|2|21/16|Compares the value of the memory location pointed to by hl with a. Then hl is incremented and bc is decremented. If bc is not zero and z is not set, this operation is repeated. Interrupts can trigger while this instruction is processing.">cpir</TD>
+    <TD axis="-1  1 |2|21/16|A byte from port c is written to the memory location pointed to by hl. Then hl is incremented and b is decremented. If b is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.">inir</TD>
+    <TD axis="-1  1 |2|21/16|A byte from the memory location pointed to by hl is written to port c. Then hl is incremented and b is decremented. If b is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.">otir</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="-000--|2|21/16|Transfers a byte of data from the memory location pointed to by hl to the memory location pointed to by de. Then hl, de, and bc are decremented. If bc is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.">lddr</TD>
+    <TD axis="-10+++|2|21/16|Compares the value of the memory location pointed to by hl with a. Then hl and bc are decremented. If bc is not zero and z is not set, this operation is repeated. Interrupts can trigger while this instruction is processing.">cpdr</TD>
+    <TD axis="-1  1 |2|21/16|A byte from port c is written to the memory location pointed to by hl. Then hl and b are decremented. If b is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.">indr</TD>
+    <TD axis="-1  1 |2|21/16|A byte from the memory location pointed to by hl is written to port c. Then hl and b are decremented. If b is not zero, this operation is repeated. Interrupts can trigger while this instruction is processing.">otdr</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR></TBODY></TABLE>
+<H3 id="table3">Bit instructions (CB)</H3>
+<TABLE title="CB">
+  <TBODY>
+  <TR>
+    <TD></TD>
+    <TH>0</TH>
+    <TH>1</TH>
+    <TH>2</TH>
+    <TH>3</TH>
+    <TH>4</TH>
+    <TH>5</TH>
+    <TH>6</TH>
+    <TH>7</TH>
+    <TH>8</TH>
+    <TH>9</TH>
+    <TH>A</TH>
+    <TH>B</TH>
+    <TH>C</TH>
+    <TH>D</TH>
+    <TH>E</TH>
+    <TH>F</TH></TR>
+  <TR>
+    <TH>0</TH>
+    <TD axis="+0P0++|2|8|The contents of b are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      b</TD>
+    <TD axis="+0P0++|2|8|The contents of c are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      c</TD>
+    <TD axis="+0P0++|2|8|The contents of d are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      d</TD>
+    <TD axis="+0P0++|2|8|The contents of e are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      e</TD>
+    <TD axis="+0P0++|2|8|The contents of h are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      h</TD>
+    <TD axis="+0P0++|2|8|The contents of l are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      l</TD>
+    <TD axis="+0P0++|2|15|The contents of (hl) are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      (hl)</TD>
+    <TD axis="+0P0++|2|8|The contents of a are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      a</TD>
+    <TD axis="+0P0++|2|8|The contents of b are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      b</TD>
+    <TD axis="+0P0++|2|8|The contents of c are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      c</TD>
+    <TD axis="+0P0++|2|8|The contents of d are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      d</TD>
+    <TD axis="+0P0++|2|8|The contents of e are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      e</TD>
+    <TD axis="+0P0++|2|8|The contents of h are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      h</TD>
+    <TD axis="+0P0++|2|8|The contents of l are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      l</TD>
+    <TD axis="+0P0++|2|15|The contents of (hl) are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      (hl)</TD>
+    <TD axis="+0P0++|2|8|The contents of a are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      a</TD></TR>
+  <TR>
+    <TH>1</TH>
+    <TD axis="+0P0++|2|8|The contents of b are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      b</TD>
+    <TD axis="+0P0++|2|8|The contents of c are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      c</TD>
+    <TD axis="+0P0++|2|8|The contents of d are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      d</TD>
+    <TD axis="+0P0++|2|8|The contents of e are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      e</TD>
+    <TD axis="+0P0++|2|8|The contents of h are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      h</TD>
+    <TD axis="+0P0++|2|8|The contents of l are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      l</TD>
+    <TD axis="+0P0++|2|15|The contents of (hl) are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      (hl)</TD>
+    <TD axis="+0P0++|2|8|The contents of a are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      a</TD>
+    <TD axis="+0P0++|2|8|The contents of b are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      b</TD>
+    <TD axis="+0P0++|2|8|The contents of c are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      c</TD>
+    <TD axis="+0P0++|2|8|The contents of d are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      d</TD>
+    <TD axis="+0P0++|2|8|The contents of e are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      e</TD>
+    <TD axis="+0P0++|2|8|The contents of h are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      h</TD>
+    <TD axis="+0P0++|2|8|The contents of l are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      l</TD>
+    <TD axis="+0P0++|2|15|The contents of (hl) are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      (hl)</TD>
+    <TD axis="+0P0++|2|8|The contents of a are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      a</TD></TR>
+  <TR>
+    <TH>2</TH>
+    <TD axis="+0P0++|2|8|The contents of b are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      b</TD>
+    <TD axis="+0P0++|2|8|The contents of c are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      c</TD>
+    <TD axis="+0P0++|2|8|The contents of d are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      d</TD>
+    <TD axis="+0P0++|2|8|The contents of e are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      e</TD>
+    <TD axis="+0P0++|2|8|The contents of h are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      h</TD>
+    <TD axis="+0P0++|2|8|The contents of l are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      l</TD>
+    <TD axis="+0P0++|2|15|The contents of (hl) are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      (hl)</TD>
+    <TD axis="+0P0++|2|8|The contents of a are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      a</TD>
+    <TD axis="+0P0++|2|8|The contents of b are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      b</TD>
+    <TD axis="+0P0++|2|8|The contents of c are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      c</TD>
+    <TD axis="+0P0++|2|8|The contents of d are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      d</TD>
+    <TD axis="+0P0++|2|8|The contents of e are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      e</TD>
+    <TD axis="+0P0++|2|8|The contents of h are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      h</TD>
+    <TD axis="+0P0++|2|8|The contents of l are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      l</TD>
+    <TD axis="+0P0++|2|15|The contents of (hl) are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      (hl)</TD>
+    <TD axis="+0P0++|2|8|The contents of a are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      a</TD></TR>
+  <TR>
+    <TH>3</TH>
+    <TD class="un" axis="+0P0++|2|8|The contents of b are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      b</TD>
+    <TD class="un" axis="+0P0++|2|8|The contents of c are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      c</TD>
+    <TD class="un" axis="+0P0++|2|8|The contents of d are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      d</TD>
+    <TD class="un" axis="+0P0++|2|8|The contents of e are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      e</TD>
+    <TD class="un" axis="+0P0++|2|8|The contents of h are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      h</TD>
+    <TD class="un" axis="+0P0++|2|8|The contents of l are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      l</TD>
+    <TD class="un" axis="+0P0++|2|15|The contents of (hl) are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      (hl)</TD>
+    <TD class="un" axis="+0P0++|2|8|The contents of a are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      a</TD>
+    <TD axis="+0P0++|2|8|The contents of b are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      b</TD>
+    <TD axis="+0P0++|2|8|The contents of c are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      c</TD>
+    <TD axis="+0P0++|2|8|The contents of d are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      d</TD>
+    <TD axis="+0P0++|2|8|The contents of e are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      e</TD>
+    <TD axis="+0P0++|2|8|The contents of h are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      h</TD>
+    <TD axis="+0P0++|2|8|The contents of l are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      l</TD>
+    <TD axis="+0P0++|2|15|The contents of (hl) are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      (hl)</TD>
+    <TD axis="+0P0++|2|8|The contents of a are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      a</TD></TR>
+  <TR>
+    <TH>4</TH>
+    <TD axis="-0 1+ |2|8|Tests bit 0 of b.">bit 0,b</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 0 of c.">bit 0,c</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 0 of d.">bit 0,d</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 0 of e.">bit 0,e</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 0 of h.">bit 0,h</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 0 of l.">bit 0,l</TD>
+    <TD axis="-0 1+ |2|12|Tests bit 0 of (hl).">bit 0,(hl)</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 0 of a.">bit 0,a</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 1 of b.">bit 1,b</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 1 of c.">bit 1,c</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 1 of d.">bit 1,d</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 1 of e.">bit 1,e</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 1 of h.">bit 1,h</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 1 of l.">bit 1,l</TD>
+    <TD axis="-0 1+ |2|12|Tests bit 1 of (hl).">bit 1,(hl)</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 1 of a.">bit 1,a</TD></TR>
+  <TR>
+    <TH>5</TH>
+    <TD axis="-0 1+ |2|8|Tests bit 2 of b.">bit 2,b</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 2 of c.">bit 2,c</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 2 of d.">bit 2,d</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 2 of e.">bit 2,e</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 2 of h.">bit 2,h</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 2 of l.">bit 2,l</TD>
+    <TD axis="-0 1+ |2|12|Tests bit 2 of (hl).">bit 2,(hl)</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 2 of a.">bit 2,a</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 3 of b.">bit 3,b</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 3 of c.">bit 3,c</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 3 of d.">bit 3,d</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 3 of e.">bit 3,e</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 3 of h.">bit 3,h</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 3 of l.">bit 3,l</TD>
+    <TD axis="-0 1+ |2|12|Tests bit 3 of (hl).">bit 3,(hl)</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 3 of a.">bit 3,a</TD></TR>
+  <TR>
+    <TH>6</TH>
+    <TD axis="-0 1+ |2|8|Tests bit 4 of b.">bit 4,b</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 4 of c.">bit 4,c</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 4 of d.">bit 4,d</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 4 of e.">bit 4,e</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 4 of h.">bit 4,h</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 4 of l.">bit 4,l</TD>
+    <TD axis="-0 1+ |2|12|Tests bit 4 of (hl).">bit 4,(hl)</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 4 of a.">bit 4,a</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 5 of b.">bit 5,b</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 5 of c.">bit 5,c</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 5 of d.">bit 5,d</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 5 of e.">bit 5,e</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 5 of h.">bit 5,h</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 5 of l.">bit 5,l</TD>
+    <TD axis="-0 1+ |2|12|Tests bit 5 of (hl).">bit 5,(hl)</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 5 of a.">bit 5,a</TD></TR>
+  <TR>
+    <TH>7</TH>
+    <TD axis="-0 1+ |2|8|Tests bit 6 of b.">bit 6,b</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 6 of c.">bit 6,c</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 6 of d.">bit 6,d</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 6 of e.">bit 6,e</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 6 of h.">bit 6,h</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 6 of l.">bit 6,l</TD>
+    <TD axis="-0 1+ |2|12|Tests bit 6 of (hl).">bit 6,(hl)</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 6 of a.">bit 6,a</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 7 of b.">bit 7,b</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 7 of c.">bit 7,c</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 7 of d.">bit 7,d</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 7 of e.">bit 7,e</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 7 of h.">bit 7,h</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 7 of l.">bit 7,l</TD>
+    <TD axis="-0 1+ |2|12|Tests bit 7 of (hl).">bit 7,(hl)</TD>
+    <TD axis="-0 1+ |2|8|Tests bit 7 of a.">bit 7,a</TD></TR>
+  <TR>
+    <TH>8</TH>
+    <TD axis="------|2|8|Resets bit 0 of b.">res 0,b</TD>
+    <TD axis="------|2|8|Resets bit 0 of c.">res 0,c</TD>
+    <TD axis="------|2|8|Resets bit 0 of d.">res 0,d</TD>
+    <TD axis="------|2|8|Resets bit 0 of e.">res 0,e</TD>
+    <TD axis="------|2|8|Resets bit 0 of h.">res 0,h</TD>
+    <TD axis="------|2|8|Resets bit 0 of l.">res 0,l</TD>
+    <TD axis="------|2|15|Resets bit 0 of (hl).">res 0,(hl)</TD>
+    <TD axis="------|2|8|Resets bit 0 of a.">res 0,a</TD>
+    <TD axis="------|2|8|Resets bit 1 of b.">res 1,b</TD>
+    <TD axis="------|2|8|Resets bit 1 of c.">res 1,c</TD>
+    <TD axis="------|2|8|Resets bit 1 of d.">res 1,d</TD>
+    <TD axis="------|2|8|Resets bit 1 of e.">res 1,e</TD>
+    <TD axis="------|2|8|Resets bit 1 of h.">res 1,h</TD>
+    <TD axis="------|2|8|Resets bit 1 of l.">res 1,l</TD>
+    <TD axis="------|2|15|Resets bit 1 of (hl).">res 1,(hl)</TD>
+    <TD axis="------|2|8|Resets bit 1 of a.">res 1,a</TD></TR>
+  <TR>
+    <TH>9</TH>
+    <TD axis="------|2|8|Resets bit 2 of b.">res 2,b</TD>
+    <TD axis="------|2|8|Resets bit 2 of c.">res 2,c</TD>
+    <TD axis="------|2|8|Resets bit 2 of d.">res 2,d</TD>
+    <TD axis="------|2|8|Resets bit 2 of e.">res 2,e</TD>
+    <TD axis="------|2|8|Resets bit 2 of h.">res 2,h</TD>
+    <TD axis="------|2|8|Resets bit 2 of l.">res 2,l</TD>
+    <TD axis="------|2|15|Resets bit 2 of (hl).">res 2,(hl)</TD>
+    <TD axis="------|2|8|Resets bit 2 of a.">res 2,a</TD>
+    <TD axis="------|2|8|Resets bit 3 of b.">res 3,b</TD>
+    <TD axis="------|2|8|Resets bit 3 of c.">res 3,c</TD>
+    <TD axis="------|2|8|Resets bit 3 of d.">res 3,d</TD>
+    <TD axis="------|2|8|Resets bit 3 of e.">res 3,e</TD>
+    <TD axis="------|2|8|Resets bit 3 of h.">res 3,h</TD>
+    <TD axis="------|2|8|Resets bit 3 of l.">res 3,l</TD>
+    <TD axis="------|2|15|Resets bit 3 of (hl).">res 3,(hl)</TD>
+    <TD axis="------|2|8|Resets bit 3 of a.">res 3,a</TD></TR>
+  <TR>
+    <TH>A</TH>
+    <TD axis="------|2|8|Resets bit 4 of b.">res 4,b</TD>
+    <TD axis="------|2|8|Resets bit 4 of c.">res 4,c</TD>
+    <TD axis="------|2|8|Resets bit 4 of d.">res 4,d</TD>
+    <TD axis="------|2|8|Resets bit 4 of e.">res 4,e</TD>
+    <TD axis="------|2|8|Resets bit 4 of h.">res 4,h</TD>
+    <TD axis="------|2|8|Resets bit 4 of l.">res 4,l</TD>
+    <TD axis="------|2|15|Resets bit 4 of (hl).">res 4,(hl)</TD>
+    <TD axis="------|2|8|Resets bit 4 of a.">res 4,a</TD>
+    <TD axis="------|2|8|Resets bit 5 of b.">res 5,b</TD>
+    <TD axis="------|2|8|Resets bit 5 of c.">res 5,c</TD>
+    <TD axis="------|2|8|Resets bit 5 of d.">res 5,d</TD>
+    <TD axis="------|2|8|Resets bit 5 of e.">res 5,e</TD>
+    <TD axis="------|2|8|Resets bit 5 of h.">res 5,h</TD>
+    <TD axis="------|2|8|Resets bit 5 of l.">res 5,l</TD>
+    <TD axis="------|2|15|Resets bit 5 of (hl).">res 5,(hl)</TD>
+    <TD axis="------|2|8|Resets bit 5 of a.">res 5,a</TD></TR>
+  <TR>
+    <TH>B</TH>
+    <TD axis="------|2|8|Resets bit 6 of b.">res 6,b</TD>
+    <TD axis="------|2|8|Resets bit 6 of c.">res 6,c</TD>
+    <TD axis="------|2|8|Resets bit 6 of d.">res 6,d</TD>
+    <TD axis="------|2|8|Resets bit 6 of e.">res 6,e</TD>
+    <TD axis="------|2|8|Resets bit 6 of h.">res 6,h</TD>
+    <TD axis="------|2|8|Resets bit 6 of l.">res 6,l</TD>
+    <TD axis="------|2|15|Resets bit 6 of (hl).">res 6,(hl)</TD>
+    <TD axis="------|2|8|Resets bit 6 of a.">res 6,a</TD>
+    <TD axis="------|2|8|Resets bit 7 of b.">res 7,b</TD>
+    <TD axis="------|2|8|Resets bit 7 of c.">res 7,c</TD>
+    <TD axis="------|2|8|Resets bit 7 of d.">res 7,d</TD>
+    <TD axis="------|2|8|Resets bit 7 of e.">res 7,e</TD>
+    <TD axis="------|2|8|Resets bit 7 of h.">res 7,h</TD>
+    <TD axis="------|2|8|Resets bit 7 of l.">res 7,l</TD>
+    <TD axis="------|2|15|Resets bit 7 of (hl).">res 7,(hl)</TD>
+    <TD axis="------|2|8|Resets bit 7 of a.">res 7,a</TD></TR>
+  <TR>
+    <TH>C</TH>
+    <TD axis="------|2|8|Sets bit 0 of b.">set 0,b</TD>
+    <TD axis="------|2|8|Sets bit 0 of c.">set 0,c</TD>
+    <TD axis="------|2|8|Sets bit 0 of d.">set 0,d</TD>
+    <TD axis="------|2|8|Sets bit 0 of e.">set 0,e</TD>
+    <TD axis="------|2|8|Sets bit 0 of h.">set 0,h</TD>
+    <TD axis="------|2|8|Sets bit 0 of l.">set 0,l</TD>
+    <TD axis="------|2|15|Sets bit 0 of (hl).">set 0,(hl)</TD>
+    <TD axis="------|2|8|Sets bit 0 of a.">set 0,a</TD>
+    <TD axis="------|2|8|Sets bit 1 of b.">set 1,b</TD>
+    <TD axis="------|2|8|Sets bit 1 of c.">set 1,c</TD>
+    <TD axis="------|2|8|Sets bit 1 of d.">set 1,d</TD>
+    <TD axis="------|2|8|Sets bit 1 of e.">set 1,e</TD>
+    <TD axis="------|2|8|Sets bit 1 of h.">set 1,h</TD>
+    <TD axis="------|2|8|Sets bit 1 of l.">set 1,l</TD>
+    <TD axis="------|2|15|Sets bit 1 of (hl).">set 1,(hl)</TD>
+    <TD axis="------|2|8|Sets bit 1 of a.">set 1,a</TD></TR>
+  <TR>
+    <TH>D</TH>
+    <TD axis="------|2|8|Sets bit 2 of b.">set 2,b</TD>
+    <TD axis="------|2|8|Sets bit 2 of c.">set 2,c</TD>
+    <TD axis="------|2|8|Sets bit 2 of d.">set 2,d</TD>
+    <TD axis="------|2|8|Sets bit 2 of e.">set 2,e</TD>
+    <TD axis="------|2|8|Sets bit 2 of h.">set 2,h</TD>
+    <TD axis="------|2|8|Sets bit 2 of l.">set 2,l</TD>
+    <TD axis="------|2|15|Sets bit 2 of (hl).">set 2,(hl)</TD>
+    <TD axis="------|2|8|Sets bit 2 of a.">set 2,a</TD>
+    <TD axis="------|2|8|Sets bit 3 of b.">set 3,b</TD>
+    <TD axis="------|2|8|Sets bit 3 of c.">set 3,c</TD>
+    <TD axis="------|2|8|Sets bit 3 of d.">set 3,d</TD>
+    <TD axis="------|2|8|Sets bit 3 of e.">set 3,e</TD>
+    <TD axis="------|2|8|Sets bit 3 of h.">set 3,h</TD>
+    <TD axis="------|2|8|Sets bit 3 of l.">set 3,l</TD>
+    <TD axis="------|2|15|Sets bit 3 of (hl).">set 3,(hl)</TD>
+    <TD axis="------|2|8|Sets bit 3 of a.">set 3,a</TD></TR>
+  <TR>
+    <TH>E</TH>
+    <TD axis="------|2|8|Sets bit 4 of b.">set 4,b</TD>
+    <TD axis="------|2|8|Sets bit 4 of c.">set 4,c</TD>
+    <TD axis="------|2|8|Sets bit 4 of d.">set 4,d</TD>
+    <TD axis="------|2|8|Sets bit 4 of e.">set 4,e</TD>
+    <TD axis="------|2|8|Sets bit 4 of h.">set 4,h</TD>
+    <TD axis="------|2|8|Sets bit 4 of l.">set 4,l</TD>
+    <TD axis="------|2|15|Sets bit 4 of (hl).">set 4,(hl)</TD>
+    <TD axis="------|2|8|Sets bit 4 of a.">set 4,a</TD>
+    <TD axis="------|2|8|Sets bit 5 of b.">set 5,b</TD>
+    <TD axis="------|2|8|Sets bit 5 of c.">set 5,c</TD>
+    <TD axis="------|2|8|Sets bit 5 of d.">set 5,d</TD>
+    <TD axis="------|2|8|Sets bit 5 of e.">set 5,e</TD>
+    <TD axis="------|2|8|Sets bit 5 of h.">set 5,h</TD>
+    <TD axis="------|2|8|Sets bit 5 of l.">set 5,l</TD>
+    <TD axis="------|2|15|Sets bit 5 of (hl).">set 5,(hl)</TD>
+    <TD axis="------|2|8|Sets bit 5 of a.">set 5,a</TD></TR>
+  <TR>
+    <TH>F</TH>
+    <TD axis="------|2|8|Sets bit 6 of b.">set 6,b</TD>
+    <TD axis="------|2|8|Sets bit 6 of c.">set 6,c</TD>
+    <TD axis="------|2|8|Sets bit 6 of d.">set 6,d</TD>
+    <TD axis="------|2|8|Sets bit 6 of e.">set 6,e</TD>
+    <TD axis="------|2|8|Sets bit 6 of h.">set 6,h</TD>
+    <TD axis="------|2|8|Sets bit 6 of l.">set 6,l</TD>
+    <TD axis="------|2|15|Sets bit 6 of (hl).">set 6,(hl)</TD>
+    <TD axis="------|2|8|Sets bit 6 of a.">set 6,a</TD>
+    <TD axis="------|2|8|Sets bit 7 of b.">set 7,b</TD>
+    <TD axis="------|2|8|Sets bit 7 of c.">set 7,c</TD>
+    <TD axis="------|2|8|Sets bit 7 of d.">set 7,d</TD>
+    <TD axis="------|2|8|Sets bit 7 of e.">set 7,e</TD>
+    <TD axis="------|2|8|Sets bit 7 of h.">set 7,h</TD>
+    <TD axis="------|2|8|Sets bit 7 of l.">set 7,l</TD>
+    <TD axis="------|2|15|Sets bit 7 of (hl).">set 7,(hl)</TD>
+    <TD axis="------|2|8|Sets bit 7 of a.">set 7,a</TD></TR></TBODY></TABLE>
+<H3 id="table4">IX instructions (DD)</H3>
+<TABLE title="DD">
+  <TBODY>
+  <TR>
+    <TD></TD>
+    <TH>0</TH>
+    <TH>1</TH>
+    <TH>2</TH>
+    <TH>3</TH>
+    <TH>4</TH>
+    <TH>5</TH>
+    <TH>6</TH>
+    <TH>7</TH>
+    <TH>8</TH>
+    <TH>9</TH>
+    <TH>A</TH>
+    <TH>B</TH>
+    <TH>C</TH>
+    <TH>D</TH>
+    <TH>E</TH>
+    <TH>F</TH></TR>
+  <TR>
+    <TH>0</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="++-+--|2|15|The value of bc is added to ix.">add ix,bc</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>1</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="++-+--|2|15|The value of de is added to ix.">add ix,de</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>2</TH>
+    <TD></TD>
+    <TD axis="------|4|14|Loads ** into register ix.">ld ix,**</TD>
+    <TD 
+      axis="------|4|20|Stores ix into the memory location pointed to by **.">ld 
+      (**),ix</TD>
+    <TD axis="------|2|10|Adds one to ix.">inc ix</TD>
+    <TD class="un" axis="-+V+++|2|8|Adds one to ixh.">inc ixh</TD>
+    <TD class="un" axis="-+V+++|2|8|Subtracts one from ixh.">dec ixh</TD>
+    <TD class="un" axis="------|3|11|Loads * into ixh.">ld ixh,*</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="++-+--|2|15|The value of ix is added to ix.">add ix,ix</TD>
+    <TD axis="------|4|20|Loads the value pointed to by ** into ix.">ld 
+    ix,(**)</TD>
+    <TD axis="------|2|10|Subtracts one from ix.">dec ix</TD>
+    <TD class="un" axis="-+V+++|2|8|Adds one to ixl.">inc ixl</TD>
+    <TD class="un" axis="-+V+++|2|8|Subtracts one from ixl.">dec ixl</TD>
+    <TD class="un" axis="------|3|11|Loads * into ixl.">ld ixl,*</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>3</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="-+V+++|3|23|Adds one to the memory location pointed to by ix plus *.">inc 
+      (ix+*)</TD>
+    <TD axis="-+V+++|3|23|Subtracts one from the memory location pointed to by ix plus *.">dec 
+      (ix+*)</TD>
+    <TD axis="------|4|19|Stores * to the memory location pointed to by ix plus *.">ld 
+      (ix+*),*</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="++-+--|2|15|The value of sp is added to ix.">add ix,sp</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>4</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of ixh are loaded into b.">ld 
+      b,ixh</TD>
+    <TD class="un" axis="------|2|8|The contents of ixl are loaded into b.">ld 
+      b,ixl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by ix plus * into b.">ld 
+      b,(ix+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of ixh are loaded into c.">ld 
+      c,ixh</TD>
+    <TD class="un" axis="------|2|8|The contents of ixl are loaded into c.">ld 
+      c,ixl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by ix plus * into c.">ld 
+      c,(ix+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>5</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of ixh are loaded into d.">ld 
+      d,ixh</TD>
+    <TD class="un" axis="------|2|8|The contents of ixl are loaded into d.">ld 
+      d,ixl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by ix plus * into d.">ld 
+      d,(ix+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of ixh are loaded into e.">ld 
+      e,ixh</TD>
+    <TD class="un" axis="------|2|8|The contents of ixl are loaded into e.">ld 
+      e,ixl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by ix plus * into e.">ld 
+      e,(ix+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>6</TH>
+    <TD class="un" axis="------|2|8|The contents of b are loaded into ixh.">ld 
+      ixh,b</TD>
+    <TD class="un" axis="------|2|8|The contents of c are loaded into ixh.">ld 
+      ixh,c</TD>
+    <TD class="un" axis="------|2|8|The contents of d are loaded into ixh.">ld 
+      ixh,d</TD>
+    <TD class="un" axis="------|2|8|The contents of e are loaded into ixh.">ld 
+      ixh,e</TD>
+    <TD class="un" 
+      axis="------|2|8|The contents of ixh are loaded into ixh.">ld ixh,ixh</TD>
+    <TD class="un" 
+      axis="------|2|8|The contents of ixl are loaded into ixh.">ld ixh,ixl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by ix plus * into h.">ld 
+      h,(ix+*)</TD>
+    <TD class="un" axis="------|2|8|The contents of a are loaded into ixh.">ld 
+      ixh,a</TD>
+    <TD class="un" axis="------|2|8|The contents of b are loaded into ixl.">ld 
+      ixl,b</TD>
+    <TD class="un" axis="------|2|8|The contents of c are loaded into ixl.">ld 
+      ixl,c</TD>
+    <TD class="un" axis="------|2|8|The contents of d are loaded into ixl.">ld 
+      ixl,d</TD>
+    <TD class="un" axis="------|2|8|The contents of e are loaded into ixl.">ld 
+      ixl,e</TD>
+    <TD class="un" 
+      axis="------|2|8|The contents of ixh are loaded into ixl.">ld ixl,ixh</TD>
+    <TD class="un" 
+      axis="------|2|8|The contents of ixl are loaded into ixl.">ld ixl,ixl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by ix plus * into l.">ld 
+      l,(ix+*)</TD>
+    <TD class="un" axis="------|2|8|The contents of a are loaded into ixl.">ld 
+      ixl,a</TD></TR>
+  <TR>
+    <TH>7</TH>
+    <TD axis="------|3|19|Stores b to the memory location pointed to by ix plus *.">ld 
+      (ix+*),b</TD>
+    <TD axis="------|3|19|Stores c to the memory location pointed to by ix plus *.">ld 
+      (ix+*),c</TD>
+    <TD axis="------|3|19|Stores d to the memory location pointed to by ix plus *.">ld 
+      (ix+*),d</TD>
+    <TD axis="------|3|19|Stores e to the memory location pointed to by ix plus *.">ld 
+      (ix+*),e</TD>
+    <TD axis="------|3|19|Stores h to the memory location pointed to by ix plus *.">ld 
+      (ix+*),h</TD>
+    <TD axis="------|3|19|Stores l to the memory location pointed to by ix plus *.">ld 
+      (ix+*),l</TD>
+    <TD></TD>
+    <TD axis="------|3|19|Stores a to the memory location pointed to by ix plus *.">ld 
+      (ix+*),a</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of ixh are loaded into a.">ld 
+      a,ixh</TD>
+    <TD class="un" axis="------|2|8|The contents of ixl are loaded into a.">ld 
+      a,ixl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by ix plus * into a.">ld 
+      a,(ix+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>8</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="++V+++|2|8|Adds ixh to a.">add a,ixh</TD>
+    <TD class="un" axis="++V+++|2|8|Adds ixl to a.">add a,ixl</TD>
+    <TD axis="++V+++|3|19|Adds the value pointed to by ix plus * to a.">add 
+      a,(ix+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="++V+++|2|8|Adds ixh and the carry flag to a.">adc 
+      a,ixh</TD>
+    <TD class="un" axis="++V+++|2|8|Adds ixl and the carry flag to a.">adc 
+      a,ixl</TD>
+    <TD axis="++V+++|3|19|Adds the value pointed to by ix plus * and the carry flag to a.">adc 
+      a,(ix+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>9</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="++V+++|2|8|Subtracts ixh from a.">sub ixh</TD>
+    <TD class="un" axis="++V+++|2|8|Subtracts ixl from a.">sub ixl</TD>
+    <TD 
+      axis="++V+++|3|19|Subtracts the value pointed to by ix plus * from a.">sub 
+      (ix+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" 
+      axis="++V+++|2|8|Subtracts ixh and the carry flag from a.">sbc a,ixh</TD>
+    <TD class="un" 
+      axis="++V+++|2|8|Subtracts ixl and the carry flag from a.">sbc a,ixl</TD>
+    <TD axis="++V+++|3|19|Subtracts the value pointed to by ix plus * and the carry flag from a.">sbc 
+      a,(ix+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>A</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="00P1++|2|8|Bitwise AND on a with ixh.">and ixh</TD>
+    <TD class="un" axis="00P1++|2|8|Bitwise AND on a with ixl.">and ixl</TD>
+    <TD axis="00P1++|3|19|Bitwise AND on a with the value pointed to by ix plus *.">and 
+      (ix+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="00P0++|2|8|Bitwise XOR on a with ixh.">xor ixh</TD>
+    <TD class="un" axis="00P0++|2|8|Bitwise XOR on a with ixl.">xor ixl</TD>
+    <TD axis="00P0++|3|19|Bitwise XOR on a with the value pointed to by ix plus *.">xor 
+      (ix+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>B</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="00P0++|2|8|Bitwise OR on a with ixh.">or ixh</TD>
+    <TD class="un" axis="00P0++|2|8|Bitwise OR on a with ixl.">or ixl</TD>
+    <TD axis="00P0++|3|19|Bitwise OR on a with the value pointed to by ix plus *.">or 
+      (ix+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="++V+++|2|8|Subtracts ixh from a and affects flags according to the result. a is not modified.">cp 
+      ixh</TD>
+    <TD class="un" axis="++V+++|2|8|Subtracts ixl from a and affects flags according to the result. a is not modified.">cp 
+      ixl</TD>
+    <TD axis="++V+++|3|19|Subtracts the value pointed to by ix plus * from a and affects flags according to the result. a is not modified.">cp 
+      (ix+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>C</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="ln"><A href="http://clrhome.org/table/#table5">IX BITS</A></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>D</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>E</TH>
+    <TD></TD>
+    <TD axis="------|2|14|The memory location pointed to by sp is stored into ixl and sp is incremented. The memory location pointed to by sp is stored into ixh and sp is incremented again.">pop 
+      ix</TD>
+    <TD></TD>
+    <TD 
+      axis="------|2|23|Exchanges (sp) with the ixl, and (sp+1) with the ixh.">ex 
+      (sp),ix</TD>
+    <TD></TD>
+    <TD axis="------|2|15|sp is decremented and ixh is stored into the memory location pointed to by sp. sp is decremented again and ixl is stored into the memory location pointed to by sp.">push 
+      ix</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="------|2|8|Loads the value of ix into pc.">jp (ix)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>F</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="------|2|10|Loads the value of ix into sp.">ld sp,ix</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR></TBODY></TABLE>
+<H3 id="table5">IX bit instructions (DDCB)</H3>
+<TABLE title="DDCB**">
+  <TBODY>
+  <TR>
+    <TD></TD>
+    <TH>0</TH>
+    <TH>1</TH>
+    <TH>2</TH>
+    <TH>3</TH>
+    <TH>4</TH>
+    <TH>5</TH>
+    <TH>6</TH>
+    <TH>7</TH>
+    <TH>8</TH>
+    <TH>9</TH>
+    <TH>A</TH>
+    <TH>B</TH>
+    <TH>C</TH>
+    <TH>D</TH>
+    <TH>E</TH>
+    <TH>F</TH></TR>
+  <TR>
+    <TH>0</TH>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in b.">rlc 
+      (ix+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in c.">rlc 
+      (ix+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in d.">rlc 
+      (ix+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in e.">rlc 
+      (ix+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in h.">rlc 
+      (ix+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in l.">rlc 
+      (ix+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      (ix+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in a.">rlc 
+      (ix+*),a</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in b.">rrc 
+      (ix+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in c.">rrc 
+      (ix+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in d.">rrc 
+      (ix+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in e.">rrc 
+      (ix+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in h.">rrc 
+      (ix+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in l.">rrc 
+      (ix+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      (ix+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in a.">rrc 
+      (ix+*),a</TD></TR>
+  <TR>
+    <TH>1</TH>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in b.">rl 
+      (ix+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in c.">rl 
+      (ix+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in d.">rl 
+      (ix+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in e.">rl 
+      (ix+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in h.">rl 
+      (ix+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in l.">rl 
+      (ix+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      (ix+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in a.">rl 
+      (ix+*),a</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in b.">rr 
+      (ix+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in c.">rr 
+      (ix+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in d.">rr 
+      (ix+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in e.">rr 
+      (ix+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in h.">rr 
+      (ix+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in l.">rr 
+      (ix+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      (ix+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in a.">rr 
+      (ix+*),a</TD></TR>
+  <TR>
+    <TH>2</TH>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in b.">sla 
+      (ix+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in c.">sla 
+      (ix+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in d.">sla 
+      (ix+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in e.">sla 
+      (ix+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in h.">sla 
+      (ix+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in l.">sla 
+      (ix+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      (ix+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in a.">sla 
+      (ix+*),a</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in b.">sra 
+      (ix+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in c.">sra 
+      (ix+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in d.">sra 
+      (ix+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in e.">sra 
+      (ix+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in h.">sra 
+      (ix+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in l.">sra 
+      (ix+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      (ix+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in a.">sra 
+      (ix+*),a</TD></TR>
+  <TR>
+    <TH>3</TH>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in b.">sll 
+      (ix+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in c.">sll 
+      (ix+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in d.">sll 
+      (ix+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in e.">sll 
+      (ix+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in h.">sll 
+      (ix+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in l.">sll 
+      (ix+*),l</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      (ix+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in a.">sll 
+      (ix+*),a</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in b.">srl 
+      (ix+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in c.">srl 
+      (ix+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in d.">srl 
+      (ix+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in e.">srl 
+      (ix+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in h.">srl 
+      (ix+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in l.">srl 
+      (ix+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      (ix+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by ix plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in a.">srl 
+      (ix+*),a</TD></TR>
+  <TR>
+    <TH>4</TH>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by ix plus *.">bit 
+      0,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by ix plus *.">bit 
+      0,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by ix plus *.">bit 
+      0,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by ix plus *.">bit 
+      0,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by ix plus *.">bit 
+      0,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by ix plus *.">bit 
+      0,(ix+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by ix plus *.">bit 
+      0,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by ix plus *.">bit 
+      0,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by ix plus *.">bit 
+      1,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by ix plus *.">bit 
+      1,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by ix plus *.">bit 
+      1,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by ix plus *.">bit 
+      1,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by ix plus *.">bit 
+      1,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by ix plus *.">bit 
+      1,(ix+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by ix plus *.">bit 
+      1,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by ix plus *.">bit 
+      1,(ix+*)</TD></TR>
+  <TR>
+    <TH>5</TH>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by ix plus *.">bit 
+      2,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by ix plus *.">bit 
+      2,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by ix plus *.">bit 
+      2,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by ix plus *.">bit 
+      2,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by ix plus *.">bit 
+      2,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by ix plus *.">bit 
+      2,(ix+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by ix plus *.">bit 
+      2,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by ix plus *.">bit 
+      2,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by ix plus *.">bit 
+      3,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by ix plus *.">bit 
+      3,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by ix plus *.">bit 
+      3,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by ix plus *.">bit 
+      3,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by ix plus *.">bit 
+      3,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by ix plus *.">bit 
+      3,(ix+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by ix plus *.">bit 
+      3,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by ix plus *.">bit 
+      3,(ix+*)</TD></TR>
+  <TR>
+    <TH>6</TH>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by ix plus *.">bit 
+      4,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by ix plus *.">bit 
+      4,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by ix plus *.">bit 
+      4,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by ix plus *.">bit 
+      4,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by ix plus *.">bit 
+      4,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by ix plus *.">bit 
+      4,(ix+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by ix plus *.">bit 
+      4,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by ix plus *.">bit 
+      4,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by ix plus *.">bit 
+      5,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by ix plus *.">bit 
+      5,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by ix plus *.">bit 
+      5,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by ix plus *.">bit 
+      5,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by ix plus *.">bit 
+      5,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by ix plus *.">bit 
+      5,(ix+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by ix plus *.">bit 
+      5,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by ix plus *.">bit 
+      5,(ix+*)</TD></TR>
+  <TR>
+    <TH>7</TH>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by ix plus *.">bit 
+      6,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by ix plus *.">bit 
+      6,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by ix plus *.">bit 
+      6,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by ix plus *.">bit 
+      6,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by ix plus *.">bit 
+      6,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by ix plus *.">bit 
+      6,(ix+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by ix plus *.">bit 
+      6,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by ix plus *.">bit 
+      6,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by ix plus *.">bit 
+      7,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by ix plus *.">bit 
+      7,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by ix plus *.">bit 
+      7,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by ix plus *.">bit 
+      7,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by ix plus *.">bit 
+      7,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by ix plus *.">bit 
+      7,(ix+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by ix plus *.">bit 
+      7,(ix+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by ix plus *.">bit 
+      7,(ix+*)</TD></TR>
+  <TR>
+    <TH>8</TH>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by ix plus *.">res 
+      0,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by ix plus *.">res 
+      0,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by ix plus *.">res 
+      0,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by ix plus *.">res 
+      0,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by ix plus *.">res 
+      0,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by ix plus *.">res 
+      0,(ix+*),l</TD>
+    <TD axis="------|4|23|Resets bit 0 of the memory location pointed to by ix plus *.">res 
+      0,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by ix plus *.">res 
+      0,(ix+*),a</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by ix plus *.">res 
+      1,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by ix plus *.">res 
+      1,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by ix plus *.">res 
+      1,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by ix plus *.">res 
+      1,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by ix plus *.">res 
+      1,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by ix plus *.">res 
+      1,(ix+*),l</TD>
+    <TD axis="------|4|23|Resets bit 1 of the memory location pointed to by ix plus *.">res 
+      1,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by ix plus *.">res 
+      1,(ix+*),a</TD></TR>
+  <TR>
+    <TH>9</TH>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by ix plus *.">res 
+      2,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by ix plus *.">res 
+      2,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by ix plus *.">res 
+      2,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by ix plus *.">res 
+      2,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by ix plus *.">res 
+      2,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by ix plus *.">res 
+      2,(ix+*),l</TD>
+    <TD axis="------|4|23|Resets bit 2 of the memory location pointed to by ix plus *.">res 
+      2,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by ix plus *.">res 
+      2,(ix+*),a</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by ix plus *.">res 
+      3,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by ix plus *.">res 
+      3,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by ix plus *.">res 
+      3,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by ix plus *.">res 
+      3,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by ix plus *.">res 
+      3,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by ix plus *.">res 
+      3,(ix+*),l</TD>
+    <TD axis="------|4|23|Resets bit 3 of the memory location pointed to by ix plus *.">res 
+      3,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by ix plus *.">res 
+      3,(ix+*),a</TD></TR>
+  <TR>
+    <TH>A</TH>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by ix plus *.">res 
+      4,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by ix plus *.">res 
+      4,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by ix plus *.">res 
+      4,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by ix plus *.">res 
+      4,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by ix plus *.">res 
+      4,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by ix plus *.">res 
+      4,(ix+*),l</TD>
+    <TD axis="------|4|23|Resets bit 4 of the memory location pointed to by ix plus *.">res 
+      4,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by ix plus *.">res 
+      4,(ix+*),a</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by ix plus *.">res 
+      5,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by ix plus *.">res 
+      5,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by ix plus *.">res 
+      5,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by ix plus *.">res 
+      5,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by ix plus *.">res 
+      5,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by ix plus *.">res 
+      5,(ix+*),l</TD>
+    <TD axis="------|4|23|Resets bit 5 of the memory location pointed to by ix plus *.">res 
+      5,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by ix plus *.">res 
+      5,(ix+*),a</TD></TR>
+  <TR>
+    <TH>B</TH>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by ix plus *.">res 
+      6,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by ix plus *.">res 
+      6,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by ix plus *.">res 
+      6,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by ix plus *.">res 
+      6,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by ix plus *.">res 
+      6,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by ix plus *.">res 
+      6,(ix+*),l</TD>
+    <TD axis="------|4|23|Resets bit 6 of the memory location pointed to by ix plus *.">res 
+      6,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by ix plus *.">res 
+      6,(ix+*),a</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by ix plus *.">res 
+      7,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by ix plus *.">res 
+      7,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by ix plus *.">res 
+      7,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by ix plus *.">res 
+      7,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by ix plus *.">res 
+      7,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by ix plus *.">res 
+      7,(ix+*),l</TD>
+    <TD axis="------|4|23|Resets bit 7 of the memory location pointed to by ix plus *.">res 
+      7,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by ix plus *.">res 
+      7,(ix+*),a</TD></TR>
+  <TR>
+    <TH>C</TH>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by ix plus *.">set 
+      0,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by ix plus *.">set 
+      0,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by ix plus *.">set 
+      0,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by ix plus *.">set 
+      0,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by ix plus *.">set 
+      0,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by ix plus *.">set 
+      0,(ix+*),l</TD>
+    <TD axis="------|4|23|Sets bit 0 of the memory location pointed to by ix plus *.">set 
+      0,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by ix plus *.">set 
+      0,(ix+*),a</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by ix plus *.">set 
+      1,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by ix plus *.">set 
+      1,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by ix plus *.">set 
+      1,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by ix plus *.">set 
+      1,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by ix plus *.">set 
+      1,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by ix plus *.">set 
+      1,(ix+*),l</TD>
+    <TD axis="------|4|23|Sets bit 1 of the memory location pointed to by ix plus *.">set 
+      1,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by ix plus *.">set 
+      1,(ix+*),a</TD></TR>
+  <TR>
+    <TH>D</TH>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by ix plus *.">set 
+      2,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by ix plus *.">set 
+      2,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by ix plus *.">set 
+      2,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by ix plus *.">set 
+      2,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by ix plus *.">set 
+      2,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by ix plus *.">set 
+      2,(ix+*),l</TD>
+    <TD axis="------|4|23|Sets bit 2 of the memory location pointed to by ix plus *.">set 
+      2,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by ix plus *.">set 
+      2,(ix+*),a</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by ix plus *.">set 
+      3,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by ix plus *.">set 
+      3,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by ix plus *.">set 
+      3,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by ix plus *.">set 
+      3,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by ix plus *.">set 
+      3,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by ix plus *.">set 
+      3,(ix+*),l</TD>
+    <TD axis="------|4|23|Sets bit 3 of the memory location pointed to by ix plus *.">set 
+      3,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by ix plus *.">set 
+      3,(ix+*),a</TD></TR>
+  <TR>
+    <TH>E</TH>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by ix plus *.">set 
+      4,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by ix plus *.">set 
+      4,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by ix plus *.">set 
+      4,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by ix plus *.">set 
+      4,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by ix plus *.">set 
+      4,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by ix plus *.">set 
+      4,(ix+*),l</TD>
+    <TD axis="------|4|23|Sets bit 4 of the memory location pointed to by ix plus *.">set 
+      4,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by ix plus *.">set 
+      4,(ix+*),a</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by ix plus *.">set 
+      5,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by ix plus *.">set 
+      5,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by ix plus *.">set 
+      5,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by ix plus *.">set 
+      5,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by ix plus *.">set 
+      5,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by ix plus *.">set 
+      5,(ix+*),l</TD>
+    <TD axis="------|4|23|Sets bit 5 of the memory location pointed to by ix plus *.">set 
+      5,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by ix plus *.">set 
+      5,(ix+*),a</TD></TR>
+  <TR>
+    <TH>F</TH>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by ix plus *.">set 
+      6,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by ix plus *.">set 
+      6,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by ix plus *.">set 
+      6,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by ix plus *.">set 
+      6,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by ix plus *.">set 
+      6,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by ix plus *.">set 
+      6,(ix+*),l</TD>
+    <TD axis="------|4|23|Sets bit 6 of the memory location pointed to by ix plus *.">set 
+      6,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by ix plus *.">set 
+      6,(ix+*),a</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by ix plus *.">set 
+      7,(ix+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by ix plus *.">set 
+      7,(ix+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by ix plus *.">set 
+      7,(ix+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by ix plus *.">set 
+      7,(ix+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by ix plus *.">set 
+      7,(ix+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by ix plus *.">set 
+      7,(ix+*),l</TD>
+    <TD axis="------|4|23|Sets bit 7 of the memory location pointed to by ix plus *.">set 
+      7,(ix+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by ix plus *.">set 
+      7,(ix+*),a</TD></TR></TBODY></TABLE>
+<H3 id="table6">IY instructions (FD)</H3>
+<TABLE title="FD">
+  <TBODY>
+  <TR>
+    <TD></TD>
+    <TH>0</TH>
+    <TH>1</TH>
+    <TH>2</TH>
+    <TH>3</TH>
+    <TH>4</TH>
+    <TH>5</TH>
+    <TH>6</TH>
+    <TH>7</TH>
+    <TH>8</TH>
+    <TH>9</TH>
+    <TH>A</TH>
+    <TH>B</TH>
+    <TH>C</TH>
+    <TH>D</TH>
+    <TH>E</TH>
+    <TH>F</TH></TR>
+  <TR>
+    <TH>0</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="++-+--|2|15|The value of bc is added to iy.">add iy,bc</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>1</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="++-+--|2|15|The value of de is added to iy.">add iy,de</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>2</TH>
+    <TD></TD>
+    <TD axis="------|4|14|Loads ** into register iy.">ld iy,**</TD>
+    <TD 
+      axis="------|4|20|Stores iy into the memory location pointed to by **.">ld 
+      (**),iy</TD>
+    <TD axis="------|2|10|Adds one to iy.">inc iy</TD>
+    <TD class="un" axis="-+V+++|2|8|Adds one to iyh.">inc iyh</TD>
+    <TD class="un" axis="-+V+++|2|8|Subtracts one from iyh.">dec iyh</TD>
+    <TD class="un" axis="------|3|11|Loads * into iyh.">ld iyh,*</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="++-+--|2|15|The value of ix is added to iy.">add iy,iy</TD>
+    <TD axis="------|4|20|Loads the value pointed to by ** into iy.">ld 
+    iy,(**)</TD>
+    <TD axis="------|2|10|Subtracts one from iy.">dec iy</TD>
+    <TD class="un" axis="-+V+++|2|8|Adds one to iyl.">inc iyl</TD>
+    <TD class="un" axis="-+V+++|2|8|Subtracts one from iyl.">dec iyl</TD>
+    <TD class="un" axis="------|3|11|Loads * into iyl.">ld iyl,*</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>3</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="-+V+++|3|23|Adds one to the memory location pointed to by iy plus *.">inc 
+      (iy+*)</TD>
+    <TD axis="-+V+++|3|23|Subtracts one from the memory location pointed to by iy plus *.">dec 
+      (iy+*)</TD>
+    <TD axis="------|4|19|Stores * to the memory location pointed to by iy plus *.">ld 
+      (iy+*),*</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="++-+--|2|15|The value of sp is added to iy.">add iy,sp</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>4</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of iyh are loaded into b.">ld 
+      b,iyh</TD>
+    <TD class="un" axis="------|2|8|The contents of iyl are loaded into b.">ld 
+      b,iyl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by iy plus * into b.">ld 
+      b,(iy+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of iyh are loaded into c.">ld 
+      c,iyh</TD>
+    <TD class="un" axis="------|2|8|The contents of iyl are loaded into c.">ld 
+      c,iyl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by iy plus * into c.">ld 
+      c,(iy+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>5</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of iyh are loaded into d.">ld 
+      d,iyh</TD>
+    <TD class="un" axis="------|2|8|The contents of iyl are loaded into d.">ld 
+      d,iyl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by iy plus * into d.">ld 
+      d,(iy+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of iyh are loaded into e.">ld 
+      e,iyh</TD>
+    <TD class="un" axis="------|2|8|The contents of iyl are loaded into e.">ld 
+      e,iyl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by iy plus * into e.">ld 
+      e,(iy+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>6</TH>
+    <TD class="un" axis="------|2|8|The contents of b are loaded into iyh.">ld 
+      iyh,b</TD>
+    <TD class="un" axis="------|2|8|The contents of c are loaded into iyh.">ld 
+      iyh,c</TD>
+    <TD class="un" axis="------|2|8|The contents of d are loaded into iyh.">ld 
+      iyh,d</TD>
+    <TD class="un" axis="------|2|8|The contents of e are loaded into iyh.">ld 
+      iyh,e</TD>
+    <TD class="un" 
+      axis="------|2|8|The contents of iyh are loaded into iyh.">ld iyh,iyh</TD>
+    <TD class="un" 
+      axis="------|2|8|The contents of iyl are loaded into iyh.">ld iyh,iyl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by iy plus * into h.">ld 
+      h,(iy+*)</TD>
+    <TD class="un" axis="------|2|8|The contents of a are loaded into iyh.">ld 
+      iyh,a</TD>
+    <TD class="un" axis="------|2|8|The contents of b are loaded into iyl.">ld 
+      iyl,b</TD>
+    <TD class="un" axis="------|2|8|The contents of c are loaded into iyl.">ld 
+      iyl,c</TD>
+    <TD class="un" axis="------|2|8|The contents of d are loaded into iyl.">ld 
+      iyl,d</TD>
+    <TD class="un" axis="------|2|8|The contents of e are loaded into iyl.">ld 
+      iyl,e</TD>
+    <TD class="un" 
+      axis="------|2|8|The contents of iyh are loaded into iyl.">ld iyl,iyh</TD>
+    <TD class="un" 
+      axis="------|2|8|The contents of iyl are loaded into iyl.">ld iyl,iyl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by iy plus * into l.">ld 
+      l,(iy+*)</TD>
+    <TD class="un" axis="------|2|8|The contents of a are loaded into iyl.">ld 
+      iyl,a</TD></TR>
+  <TR>
+    <TH>7</TH>
+    <TD axis="------|3|19|Stores b to the memory location pointed to by iy plus *.">ld 
+      (iy+*),b</TD>
+    <TD axis="------|3|19|Stores c to the memory location pointed to by iy plus *.">ld 
+      (iy+*),c</TD>
+    <TD axis="------|3|19|Stores d to the memory location pointed to by iy plus *.">ld 
+      (iy+*),d</TD>
+    <TD axis="------|3|19|Stores e to the memory location pointed to by iy plus *.">ld 
+      (iy+*),e</TD>
+    <TD axis="------|3|19|Stores h to the memory location pointed to by iy plus *.">ld 
+      (iy+*),h</TD>
+    <TD axis="------|3|19|Stores l to the memory location pointed to by iy plus *.">ld 
+      (iy+*),l</TD>
+    <TD></TD>
+    <TD axis="------|3|19|Stores a to the memory location pointed to by iy plus *.">ld 
+      (iy+*),a</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="------|2|8|The contents of iyh are loaded into a.">ld 
+      a,iyh</TD>
+    <TD class="un" axis="------|2|8|The contents of iyl are loaded into a.">ld 
+      a,iyl</TD>
+    <TD axis="------|3|19|Loads the value pointed to by iy plus * into a.">ld 
+      a,(iy+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>8</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="++V+++|2|8|Adds iyh to a.">add a,iyh</TD>
+    <TD class="un" axis="++V+++|2|8|Adds iyl to a.">add a,iyl</TD>
+    <TD axis="++V+++|3|19|Adds the value pointed to by iy plus * to a.">add 
+      a,(iy+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="++V+++|2|8|Adds iyh and the carry flag to a.">adc 
+      a,iyh</TD>
+    <TD class="un" axis="++V+++|2|8|Adds iyl and the carry flag to a.">adc 
+      a,iyl</TD>
+    <TD axis="++V+++|3|19|Adds the value pointed to by iy plus * and the carry flag to a.">adc 
+      a,(iy+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>9</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="++V+++|2|8|Subtracts iyh from a.">sub iyh</TD>
+    <TD class="un" axis="++V+++|2|8|Subtracts iyl from a.">sub iyl</TD>
+    <TD 
+      axis="++V+++|3|19|Subtracts the value pointed to by iy plus * from a.">sub 
+      (iy+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" 
+      axis="++V+++|2|8|Subtracts iyh and the carry flag from a.">sbc a,iyh</TD>
+    <TD class="un" 
+      axis="++V+++|2|8|Subtracts iyl and the carry flag from a.">sbc a,iyl</TD>
+    <TD axis="++V+++|3|19|Subtracts the value pointed to by iy plus * and the carry flag from a.">sbc 
+      a,(iy+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>A</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="00P1++|2|8|Bitwise AND on a with iyh.">and iyh</TD>
+    <TD class="un" axis="00P1++|2|8|Bitwise AND on a with iyl.">and iyl</TD>
+    <TD axis="00P1++|3|19|Bitwise AND on a with the value pointed to by iy plus *.">and 
+      (iy+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="00P0++|2|8|Bitwise XOR on a with iyh.">xor iyh</TD>
+    <TD class="un" axis="00P0++|2|8|Bitwise XOR on a with iyl.">xor iyl</TD>
+    <TD axis="00P0++|3|19|Bitwise XOR on a with the value pointed to by iy plus *.">xor 
+      (iy+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>B</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="00P0++|2|8|Bitwise OR on a with iyh.">or iyh</TD>
+    <TD class="un" axis="00P0++|2|8|Bitwise OR on a with iyl.">or iyl</TD>
+    <TD axis="00P0++|3|19|Bitwise OR on a with the value pointed to by iy plus *.">or 
+      (iy+*)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="un" axis="++V+++|2|8|Subtracts iyh from a and affects flags according to the result. a is not modified.">cp 
+      iyh</TD>
+    <TD class="un" axis="++V+++|2|8|Subtracts iyl from a and affects flags according to the result. a is not modified.">cp 
+      iyl</TD>
+    <TD axis="++V+++|3|19|Subtracts the value pointed to by iy plus * from a and affects flags according to the result. a is not modified.">cp 
+      (iy+*)</TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>C</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD class="ln"><A href="http://clrhome.org/table/#table7">IY BITS</A></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>D</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>E</TH>
+    <TD></TD>
+    <TD axis="------|2|14|The memory location pointed to by sp is stored into iyl and sp is incremented. The memory location pointed to by sp is stored into iyh and sp is incremented again.">pop 
+      iy</TD>
+    <TD></TD>
+    <TD 
+      axis="------|2|23|Exchanges (sp) with the iyl, and (sp+1) with the iyh.">ex 
+      (sp),iy</TD>
+    <TD></TD>
+    <TD axis="------|2|15|sp is decremented and iyh is stored into the memory location pointed to by sp. sp is decremented again and iyl is stored into the memory location pointed to by sp.">push 
+      iy</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="------|2|8|Loads the value of iy into pc.">jp (iy)</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR>
+  <TR>
+    <TH>F</TH>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD axis="------|2|10|Loads the value of iy into sp.">ld sp,iy</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD></TR></TBODY></TABLE>
+<H3 id="table7">IY bit instructions (FDCB)</H3>
+<TABLE title="FDCB**">
+  <TBODY>
+  <TR>
+    <TD></TD>
+    <TH>0</TH>
+    <TH>1</TH>
+    <TH>2</TH>
+    <TH>3</TH>
+    <TH>4</TH>
+    <TH>5</TH>
+    <TH>6</TH>
+    <TH>7</TH>
+    <TH>8</TH>
+    <TH>9</TH>
+    <TH>A</TH>
+    <TH>B</TH>
+    <TH>C</TH>
+    <TH>D</TH>
+    <TH>E</TH>
+    <TH>F</TH></TR>
+  <TR>
+    <TH>0</TH>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in b.">rlc 
+      (iy+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in c.">rlc 
+      (iy+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in d.">rlc 
+      (iy+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in e.">rlc 
+      (iy+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in h.">rlc 
+      (iy+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in l.">rlc 
+      (iy+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0.">rlc 
+      (iy+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and bit 0. The result is then stored in a.">rlc 
+      (iy+*),a</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in b.">rrc 
+      (iy+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in c.">rrc 
+      (iy+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in d.">rrc 
+      (iy+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in e.">rrc 
+      (iy+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in h.">rrc 
+      (iy+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in l.">rrc 
+      (iy+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7.">rrc 
+      (iy+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and bit 7. The result is then stored in a.">rrc 
+      (iy+*),a</TD></TR>
+  <TR>
+    <TH>1</TH>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in b.">rl 
+      (iy+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in c.">rl 
+      (iy+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in d.">rl 
+      (iy+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in e.">rl 
+      (iy+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in h.">rl 
+      (iy+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in l.">rl 
+      (iy+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0.">rl 
+      (iy+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated left one bit position. The contents of bit 7 are copied to the carry flag and the previous contents of the carry flag are copied to bit 0. The result is then stored in a.">rl 
+      (iy+*),a</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in b.">rr 
+      (iy+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in c.">rr 
+      (iy+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in d.">rr 
+      (iy+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in e.">rr 
+      (iy+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in h.">rr 
+      (iy+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in l.">rr 
+      (iy+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7.">rr 
+      (iy+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are rotated right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of the carry flag are copied to bit 7. The result is then stored in a.">rr 
+      (iy+*),a</TD></TR>
+  <TR>
+    <TH>2</TH>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in b.">sla 
+      (iy+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in c.">sla 
+      (iy+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in d.">sla 
+      (iy+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in e.">sla 
+      (iy+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in h.">sla 
+      (iy+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in l.">sla 
+      (iy+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0.">sla 
+      (iy+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are copied to the carry flag and a zero is put into bit 0. The result is then stored in a.">sla 
+      (iy+*),a</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in b.">sra 
+      (iy+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in c.">sra 
+      (iy+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in d.">sra 
+      (iy+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in e.">sra 
+      (iy+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in h.">sra 
+      (iy+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in l.">sra 
+      (iy+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged.">sra 
+      (iy+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and the previous contents of bit 7 are unchanged. The result is then stored in a.">sra 
+      (iy+*),a</TD></TR>
+  <TR>
+    <TH>3</TH>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in b.">sll 
+      (iy+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in c.">sll 
+      (iy+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in d.">sll 
+      (iy+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in e.">sll 
+      (iy+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in h.">sll 
+      (iy+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in l.">sll 
+      (iy+*),l</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0.">sll 
+      (iy+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted left one bit position. The contents of bit 7 are put into the carry flag and a one is put into bit 0. The result is then stored in a.">sll 
+      (iy+*),a</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in b.">srl 
+      (iy+*),b</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in c.">srl 
+      (iy+*),c</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in d.">srl 
+      (iy+*),d</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in e.">srl 
+      (iy+*),e</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in h.">srl 
+      (iy+*),h</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in l.">srl 
+      (iy+*),l</TD>
+    <TD axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7.">srl 
+      (iy+*)</TD>
+    <TD class="un" axis="+0P0++|4|23|The contents of the memory location pointed to by iy plus * are shifted right one bit position. The contents of bit 0 are copied to the carry flag and a zero is put into bit 7. The result is then stored in a.">srl 
+      (iy+*),a</TD></TR>
+  <TR>
+    <TH>4</TH>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by iy plus *.">bit 
+      0,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by iy plus *.">bit 
+      0,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by iy plus *.">bit 
+      0,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by iy plus *.">bit 
+      0,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by iy plus *.">bit 
+      0,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by iy plus *.">bit 
+      0,(iy+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by iy plus *.">bit 
+      0,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 0 of the memory location pointed to by iy plus *.">bit 
+      0,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by iy plus *.">bit 
+      1,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by iy plus *.">bit 
+      1,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by iy plus *.">bit 
+      1,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by iy plus *.">bit 
+      1,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by iy plus *.">bit 
+      1,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by iy plus *.">bit 
+      1,(iy+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by iy plus *.">bit 
+      1,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 1 of the memory location pointed to by iy plus *.">bit 
+      1,(iy+*)</TD></TR>
+  <TR>
+    <TH>5</TH>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by iy plus *.">bit 
+      2,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by iy plus *.">bit 
+      2,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by iy plus *.">bit 
+      2,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by iy plus *.">bit 
+      2,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by iy plus *.">bit 
+      2,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by iy plus *.">bit 
+      2,(iy+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by iy plus *.">bit 
+      2,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 2 of the memory location pointed to by iy plus *.">bit 
+      2,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by iy plus *.">bit 
+      3,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by iy plus *.">bit 
+      3,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by iy plus *.">bit 
+      3,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by iy plus *.">bit 
+      3,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by iy plus *.">bit 
+      3,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by iy plus *.">bit 
+      3,(iy+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by iy plus *.">bit 
+      3,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 3 of the memory location pointed to by iy plus *.">bit 
+      3,(iy+*)</TD></TR>
+  <TR>
+    <TH>6</TH>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by iy plus *.">bit 
+      4,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by iy plus *.">bit 
+      4,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by iy plus *.">bit 
+      4,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by iy plus *.">bit 
+      4,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by iy plus *.">bit 
+      4,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by iy plus *.">bit 
+      4,(iy+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by iy plus *.">bit 
+      4,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 4 of the memory location pointed to by iy plus *.">bit 
+      4,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by iy plus *.">bit 
+      5,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by iy plus *.">bit 
+      5,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by iy plus *.">bit 
+      5,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by iy plus *.">bit 
+      5,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by iy plus *.">bit 
+      5,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by iy plus *.">bit 
+      5,(iy+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by iy plus *.">bit 
+      5,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 5 of the memory location pointed to by iy plus *.">bit 
+      5,(iy+*)</TD></TR>
+  <TR>
+    <TH>7</TH>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by iy plus *.">bit 
+      6,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by iy plus *.">bit 
+      6,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by iy plus *.">bit 
+      6,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by iy plus *.">bit 
+      6,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by iy plus *.">bit 
+      6,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by iy plus *.">bit 
+      6,(iy+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by iy plus *.">bit 
+      6,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 6 of the memory location pointed to by iy plus *.">bit 
+      6,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by iy plus *.">bit 
+      7,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by iy plus *.">bit 
+      7,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by iy plus *.">bit 
+      7,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by iy plus *.">bit 
+      7,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by iy plus *.">bit 
+      7,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by iy plus *.">bit 
+      7,(iy+*)</TD>
+    <TD axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by iy plus *.">bit 
+      7,(iy+*)</TD>
+    <TD class="un" axis="-0 1+ |4|20|Tests bit 7 of the memory location pointed to by iy plus *.">bit 
+      7,(iy+*)</TD></TR>
+  <TR>
+    <TH>8</TH>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by iy plus *.">res 
+      0,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by iy plus *.">res 
+      0,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by iy plus *.">res 
+      0,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by iy plus *.">res 
+      0,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by iy plus *.">res 
+      0,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by iy plus *.">res 
+      0,(iy+*),l</TD>
+    <TD axis="------|4|23|Resets bit 0 of the memory location pointed to by iy plus *.">res 
+      0,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 0 of the memory location pointed to by iy plus *.">res 
+      0,(iy+*),a</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by iy plus *.">res 
+      1,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by iy plus *.">res 
+      1,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by iy plus *.">res 
+      1,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by iy plus *.">res 
+      1,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by iy plus *.">res 
+      1,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by iy plus *.">res 
+      1,(iy+*),l</TD>
+    <TD axis="------|4|23|Resets bit 1 of the memory location pointed to by iy plus *.">res 
+      1,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 1 of the memory location pointed to by iy plus *.">res 
+      1,(iy+*),a</TD></TR>
+  <TR>
+    <TH>9</TH>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by iy plus *.">res 
+      2,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by iy plus *.">res 
+      2,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by iy plus *.">res 
+      2,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by iy plus *.">res 
+      2,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by iy plus *.">res 
+      2,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by iy plus *.">res 
+      2,(iy+*),l</TD>
+    <TD axis="------|4|23|Resets bit 2 of the memory location pointed to by iy plus *.">res 
+      2,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 2 of the memory location pointed to by iy plus *.">res 
+      2,(iy+*),a</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by iy plus *.">res 
+      3,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by iy plus *.">res 
+      3,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by iy plus *.">res 
+      3,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by iy plus *.">res 
+      3,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by iy plus *.">res 
+      3,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by iy plus *.">res 
+      3,(iy+*),l</TD>
+    <TD axis="------|4|23|Resets bit 3 of the memory location pointed to by iy plus *.">res 
+      3,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 3 of the memory location pointed to by iy plus *.">res 
+      3,(iy+*),a</TD></TR>
+  <TR>
+    <TH>A</TH>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by iy plus *.">res 
+      4,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by iy plus *.">res 
+      4,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by iy plus *.">res 
+      4,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by iy plus *.">res 
+      4,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by iy plus *.">res 
+      4,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by iy plus *.">res 
+      4,(iy+*),l</TD>
+    <TD axis="------|4|23|Resets bit 4 of the memory location pointed to by iy plus *.">res 
+      4,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 4 of the memory location pointed to by iy plus *.">res 
+      4,(iy+*),a</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by iy plus *.">res 
+      5,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by iy plus *.">res 
+      5,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by iy plus *.">res 
+      5,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by iy plus *.">res 
+      5,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by iy plus *.">res 
+      5,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by iy plus *.">res 
+      5,(iy+*),l</TD>
+    <TD axis="------|4|23|Resets bit 5 of the memory location pointed to by iy plus *.">res 
+      5,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 5 of the memory location pointed to by iy plus *.">res 
+      5,(iy+*),a</TD></TR>
+  <TR>
+    <TH>B</TH>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by iy plus *.">res 
+      6,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by iy plus *.">res 
+      6,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by iy plus *.">res 
+      6,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by iy plus *.">res 
+      6,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by iy plus *.">res 
+      6,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by iy plus *.">res 
+      6,(iy+*),l</TD>
+    <TD axis="------|4|23|Resets bit 6 of the memory location pointed to by iy plus *.">res 
+      6,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 6 of the memory location pointed to by iy plus *.">res 
+      6,(iy+*),a</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by iy plus *.">res 
+      7,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by iy plus *.">res 
+      7,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by iy plus *.">res 
+      7,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by iy plus *.">res 
+      7,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by iy plus *.">res 
+      7,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by iy plus *.">res 
+      7,(iy+*),l</TD>
+    <TD axis="------|4|23|Resets bit 7 of the memory location pointed to by iy plus *.">res 
+      7,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Resets bit 7 of the memory location pointed to by iy plus *.">res 
+      7,(iy+*),a</TD></TR>
+  <TR>
+    <TH>C</TH>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by iy plus *.">set 
+      0,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by iy plus *.">set 
+      0,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by iy plus *.">set 
+      0,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by iy plus *.">set 
+      0,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by iy plus *.">set 
+      0,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by iy plus *.">set 
+      0,(iy+*),l</TD>
+    <TD axis="------|4|23|Sets bit 0 of the memory location pointed to by iy plus *.">set 
+      0,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 0 of the memory location pointed to by iy plus *.">set 
+      0,(iy+*),a</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by iy plus *.">set 
+      1,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by iy plus *.">set 
+      1,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by iy plus *.">set 
+      1,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by iy plus *.">set 
+      1,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by iy plus *.">set 
+      1,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by iy plus *.">set 
+      1,(iy+*),l</TD>
+    <TD axis="------|4|23|Sets bit 1 of the memory location pointed to by iy plus *.">set 
+      1,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 1 of the memory location pointed to by iy plus *.">set 
+      1,(iy+*),a</TD></TR>
+  <TR>
+    <TH>D</TH>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by iy plus *.">set 
+      2,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by iy plus *.">set 
+      2,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by iy plus *.">set 
+      2,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by iy plus *.">set 
+      2,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by iy plus *.">set 
+      2,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by iy plus *.">set 
+      2,(iy+*),l</TD>
+    <TD axis="------|4|23|Sets bit 2 of the memory location pointed to by iy plus *.">set 
+      2,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 2 of the memory location pointed to by iy plus *.">set 
+      2,(iy+*),a</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by iy plus *.">set 
+      3,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by iy plus *.">set 
+      3,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by iy plus *.">set 
+      3,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by iy plus *.">set 
+      3,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by iy plus *.">set 
+      3,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by iy plus *.">set 
+      3,(iy+*),l</TD>
+    <TD axis="------|4|23|Sets bit 3 of the memory location pointed to by iy plus *.">set 
+      3,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 3 of the memory location pointed to by iy plus *.">set 
+      3,(iy+*),a</TD></TR>
+  <TR>
+    <TH>E</TH>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by iy plus *.">set 
+      4,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by iy plus *.">set 
+      4,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by iy plus *.">set 
+      4,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by iy plus *.">set 
+      4,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by iy plus *.">set 
+      4,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by iy plus *.">set 
+      4,(iy+*),l</TD>
+    <TD axis="------|4|23|Sets bit 4 of the memory location pointed to by iy plus *.">set 
+      4,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 4 of the memory location pointed to by iy plus *.">set 
+      4,(iy+*),a</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by iy plus *.">set 
+      5,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by iy plus *.">set 
+      5,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by iy plus *.">set 
+      5,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by iy plus *.">set 
+      5,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by iy plus *.">set 
+      5,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by iy plus *.">set 
+      5,(iy+*),l</TD>
+    <TD axis="------|4|23|Sets bit 5 of the memory location pointed to by iy plus *.">set 
+      5,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 5 of the memory location pointed to by iy plus *.">set 
+      5,(iy+*),a</TD></TR>
+  <TR>
+    <TH>F</TH>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by iy plus *.">set 
+      6,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by iy plus *.">set 
+      6,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by iy plus *.">set 
+      6,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by iy plus *.">set 
+      6,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by iy plus *.">set 
+      6,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by iy plus *.">set 
+      6,(iy+*),l</TD>
+    <TD axis="------|4|23|Sets bit 6 of the memory location pointed to by iy plus *.">set 
+      6,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 6 of the memory location pointed to by iy plus *.">set 
+      6,(iy+*),a</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by iy plus *.">set 
+      7,(iy+*),b</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by iy plus *.">set 
+      7,(iy+*),c</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by iy plus *.">set 
+      7,(iy+*),d</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by iy plus *.">set 
+      7,(iy+*),e</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by iy plus *.">set 
+      7,(iy+*),h</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by iy plus *.">set 
+      7,(iy+*),l</TD>
+    <TD axis="------|4|23|Sets bit 7 of the memory location pointed to by iy plus *.">set 
+      7,(iy+*)</TD>
+    <TD class="un" axis="------|4|23|Sets bit 7 of the memory location pointed to by iy plus *.">set 
+      7,(iy+*),a</TD></TR></TBODY></TABLE>
+<DIV id="banner"><A href="http://clrhome.org/asm/"><SPAN>one assembler to rule 
+them all<BR>~~~</SPAN><IMG alt="ORG ONLINE Z80 IDE" src="Z80%20instruction%20set%20-%20ClrHome_files/bar.png"></A><CITE><A 
+href="http://clrhome.org/resources/"><IMG alt="ClrHome" src="Z80%20instruction%20set%20-%20ClrHome_files/emblem.png"></A> 
+<SPAN>another web<BR>resource by</SPAN></CITE><IMG alt="" src="Z80%20instruction%20set%20-%20ClrHome_files/banner.png"></DIV></DIV></BODY></HTML>
